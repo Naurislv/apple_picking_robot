@@ -10,6 +10,8 @@
 
 ## The Team
 
+In Progress: Create table of all team members
+
 |     Image              |     Role      |      Name      |    Location   | LinkedIn    |     email   |
 |------------------------|---------------|----------------|---------------|-------------|-------------|
 | <img src="./images/nauris_dorbe.jpg" alt="Nauris Dorbe" width="150" height="150"> |__ML, Autonomy__| Nauris Dorbe | Latvia, Riga | [Nauris](https://www.linkedin.com/in/naurisdorbe) | <naurisdorbe@gmail.com> |
