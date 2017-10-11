@@ -4,13 +4,14 @@
 1. [Architecture](#architecture)
    - [What it is self driving apple picking robot and what it is not](#what-it-is-self-driving-apple-picking-robot-and-what-it-is-not)
    - [General concept of self driving car](#general-concept-of-self-driving-car)
+   - [Apple picking robot architecture](#apple-picking-robot-architecture)
+1. [Paper review](#paper-review)
+   - [Ground Language Learning in a Simulated 3D World](#ground-language-learning-in-a-simulated-3d-world)
+   - [Deep Reinforcement Learning from Human Preferences](#deep-reinforcement-learning-from-human-preferences)
    - [Mechanical Design of a Cartesian Manipulator for Warehouse Pick and Place](#mechanical-design-of-a-cartesian-manipulator-for-warehouse-pick-and-place)
    - [Neural Task Programming Learning to Generalize Across Hierarchical Tasks](#neural-task-programming-learning-to-generalize-across-hierarchical-tasks)
    - [Rainbow: Combining Improvements in Deep Reinforcement Learning](#rainbow-combining-improvements-in-deep-reinforcement-learning)
    - [Learning to Push by Grasping: Using multiple tasks for effective learning](#learning-to-push-by-grasping-using-multiple-tasks-for-effective-learning)
-1. [Paper review](#paper-review)
-   - [Ground Language Learning in a Simulated 3D World](#ground-language-learning-in-a-simulated-3d-world)
-   - [Deep Reinforcement Learning from Human Preferences](#deep-reinforcement-learning-from-human-preferences)
 
 # Architecture
 
