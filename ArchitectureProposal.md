@@ -79,7 +79,7 @@ Make sure that vehicle follow the path issued by Planning subsystem. This subsys
 
 * [Ground Language Learning in a Simulated 3D World](https://arxiv.org/abs/1706.06551), Reviewed
 * [Deep Reinforcement Learning from Human Preferences](https://arxiv.org/pdf/1706.03741.pdf), Reviewed
-* [Mechanical Design of a Cartesian Manipulator for Warehouse Pick and Place](http://juxi.net/papers/ACRV-TR-2017-02.pdf)
+* [Mechanical Design of a Cartesian Manipulator for Warehouse Pick and Place](http://juxi.net/papers/ACRV-TR-2017-02.pdf), Reviewed
 * [Neural Task Programming: Learning to Generalize Across Hierarchical Tasks](https://arxiv.org/abs/1710.01813?utm_campaign=Revue%20newsletter&utm_medium=Newsletter&utm_source=The%20Wild%20Week%20in%20AI)
 * [Rainbow: Combining Improvements in Deep Reinforcement Learning](https://arxiv.org/abs/1710.02298?utm_campaign=Revue%20newsletter&utm_medium=Newsletter&utm_source=The%20Wild%20Week%20in%20AI)
 * [Learning to Push by Grasping: Using multiple tasks for effective learning](https://arxiv.org/pdf/1609.09025.pdf)
