@@ -1,4 +1,6 @@
-# Self driving apple picking robots
+# Apple picking robot
+
+Researching field of Deep Learning and how to apply it to Robotics. Goal is to build apple picking robot which would be able to explore (by driving) local area and locate, grab and put apples in basket autonomously.
 
 # Table of content
 
