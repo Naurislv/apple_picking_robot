@@ -1,6 +1,6 @@
 # Apple picking robot
 
-Researching field of Deep Learning and how to apply it to Robotics. Goal is to build apple picking robot which would be able to explore (by driving) local area and locate, grab and put apples in basket autonomously.
+Creating autonomous robot for given size apples piching in controlled indoor environment to gain and share experience.
 
 # Table of content
 
@@ -8,7 +8,7 @@ Researching field of Deep Learning and how to apply it to Robotics. Goal is to b
 * [Presentations](presentations/) by team members
 * [Sprint retrospects](sprint_retrospects)
 
-1. [Proposed architecture](ArchitectureProposal.md) and paper reviews
+1. [Proposed architecture](docs/ArchitectureProposal.md) and paper reviews
 
 ## The Team
 
