@@ -15,6 +15,8 @@ Creating autonomous robot for given size apples piching in controlled indoor env
 1. [Robot (real and virtual environment) sofware and hardware architectures](docs/ArchitectureProposal.md) and related paper reviews.
 2. [Intro to ROS](docs/ROS.md)
 
+# The Team
+
 In Progress: Create table of all team members
 
 |     Image              |     Role      |      Name      |    Location   | LinkedIn    |     email   |
