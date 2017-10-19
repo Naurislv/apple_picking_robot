@@ -70,4 +70,7 @@ ROS software is organized and distributed into packages, which are directories t
 
 A catkin workspace is a top-level directory where you build, install, and modify catkin packages. The workspace contains all of the packages for your project, along with several other directories for the catkin system to use when building executables and other targets from your source code.
 
+### Roslaunch
+
+When you want to start a ROS software you usually start it with launch file like this: `roslaunch launch/file.launch`. This brings up ROS loop and start all nodes described in launch file. These launch files usually bring up a set of nodes for the package that provide some aggregate functionality. This launch file can point to single node launch files and configuration files.
 
