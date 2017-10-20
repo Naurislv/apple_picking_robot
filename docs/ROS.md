@@ -2,6 +2,8 @@
 
 It is not operating system but more like software framewrok to simplify robot developement which can be installed in Docker or Linux (Ubuntu recommended) operating system.
 
+Available lecture videos about ROS can be downloaded [here](https://www.dropbox.com/sh/54lppt8w7pfbg90/AAAiSUkj0A7eIN2Ap1UbOyB9a?dl=0)
+
 ## Motivation
 
 Many components of robotic systems may researchers, engineers and practioneers built from sratch over and over because of that ROS idea was born. Instead of repeating those steps ROS tools and enviroment right away. Not to mention huge community with tons of code available.
