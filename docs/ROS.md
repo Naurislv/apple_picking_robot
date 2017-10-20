@@ -2,7 +2,7 @@
 
 It is not operating system but more like software framewrok to simplify robot developement which can be installed in Docker or Linux (Ubuntu recommended) operating system.
 
-Available lecture videos about ROS can be downloaded [here](https://www.dropbox.com/sh/54lppt8w7pfbg90/AAAiSUkj0A7eIN2Ap1UbOyB9a?dl=0)
+Available lecture videos about ROS can be downloaded [here](https://www.dropbox.com/sh/54lppt8w7pfbg90/AAAiSUkj0A7eIN2Ap1UbOyB9a?dl=0).
 
 ## Motivation
 
