@@ -12,7 +12,7 @@ Creating autonomous robot for given size apples pitching in controlled indoor en
 
 ## Run
 
-1. `bash ros/run_apple_picker.sh` - open to see comments for more info
+`bash ros/run_apple_picker.sh` - open to see comments for more info
 
 If you experience missing package error feel free to google and install it. Usually you should be able to install using `sudo apt-get package install ...` command line.
 
