@@ -1,0 +1,8 @@
+*.py[cod]
+.directory
+
+ros/build
+ros/devel
+ros/.catkin_workspace
+
+profile.tmp

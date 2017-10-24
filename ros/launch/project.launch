@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<launch>
+    <!--Hello World node -->
+    <include file="$(find hello_world)/launch/hello_world.launch"/>
+</launch>
