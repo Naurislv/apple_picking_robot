@@ -127,7 +127,7 @@ Cartman, a cartesian manipulator for pick and place applications. Cartman is com
 
 # Computer Vision
 
-## ENet: A Deep Neural Network Architecture for Real-Time Semantic Segmentation
+## [ENet: A Deep Neural Network Architecture for Real-Time Semantic Segmentation](https://arxiv.org/pdf/1606.02147.pdf)
 
 2016, 7. June
 Code: https://github.com/kwotsin/TensorFlow-ENet
