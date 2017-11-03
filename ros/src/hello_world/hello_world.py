@@ -26,10 +26,10 @@ class HelloWorld(object):
         rate = rospy.Rate(10) # 10Hz
 
         i = 0
-        while not rospy.is_shutdown():
-            i += 1
-            rospy.loginfo('Loop iter: %d', i)
-            rate.sleep()
+        #while not rospy.is_shutdown():
+        #    i += 1
+        #    rospy.loginfo('Loop iter: %d', i)
+        #    rate.sleep()
 
 if __name__ == '__main__':
     try:
