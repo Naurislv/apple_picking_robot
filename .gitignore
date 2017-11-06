@@ -5,4 +5,5 @@ ros/build
 ros/devel
 ros/.catkin_workspace
 
-profile.tmp
+# Ignore Jupyter checkpoints
+.ipynb_checkpoints

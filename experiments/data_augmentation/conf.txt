@@ -1,7 +1,0 @@
-[directories]
-home_dir:C:/Users/bruno.opermanis/Documents/Fjord/apple_detection/apple_detection/
-
-
-[params]
-encoding:utf-8
-url:http://54.82.134.199:8080/detect_apple

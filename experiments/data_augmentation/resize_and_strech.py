@@ -6,32 +6,8 @@ from pprint import pprint
 import sys
 import cv2
 
-
-try:
-    #python 2 imports
-    import ConfigParser
-    config = ConfigParser.RawConfigParser()
-except:
-    # python 3 imports
-    import configparser
-    config = configparser.ConfigParser()
-
-config.read('conf.txt')
-
-home_dir = config.get('directories', 'home_dir')
-
-# input data directories
-xml_dir = home_dir + "annotations_init/xmls/"
-img_dir = home_dir + "images_init/"
-
-# output data directories 
-aug_xml_dir = home_dir + "annotations/xmls/"
-aug_img_dir = home_dir + "images/"
-
-
 dmin = 10 # minimal distance from bounding box till border of original image
 d = 10 # width of margin which to multiply
-
 
 times_added = 40 # how many times margins should be added
 filter_window = 21 # filter window for blurring
@@ -157,8 +133,6 @@ def add_margs(img, xmin, ymin, xmax, ymax, xmorig=None, ymorig=None, xMorig=None
     return img1, is_ok, xmin1, ymin1, xmax1, ymax1, xmorig1, ymorig1, xMorig1, yMorig1
 
 
-
-
 def transform_image(img, xmin, ymin, xmax, ymax, times_added=[40,60]):
     """
     This function applies full transformation for one image.
@@ -169,7 +143,7 @@ def transform_image(img, xmin, ymin, xmax, ymax, times_added=[40,60]):
 
     output:
     outs - list of augmented images respective to times_added list
-    """    
+    """
     orig_size = img.size  
     img_original = img.copy()
     
@@ -203,7 +177,7 @@ def transform_image(img, xmin, ymin, xmax, ymax, times_added=[40,60]):
 
 
 
-def change_filname(xml,tag, newname):
+def change_filname(xml, tag, newname):
     """
     This function change content of a tag
     input:
@@ -215,74 +189,111 @@ def change_filname(xml,tag, newname):
     xml.replace_with(BeautifulSoup(tag_str, "lxml").find_all(tag)[0])
 
 
+def batch_transform(img_dir, xml_dir, aug_img_dir, aug_xml_dir, save=False):
+    fs = os.listdir(xml_dir)
+    # fs = [f for f in fs if "n07739125_10279" in f]
 
-fs = os.listdir(xml_dir)
-# fs = [f for f in fs if "n07739125_10279" in f]
+    # loop goes through all images and respective xml files
+    for nr, f in enumerate(fs):
 
-# loop goes through all images and respective xml files
-for nr, f in enumerate(fs):
+        print("Proportion of processed images: {}".format(float(nr)/float(len(fs))))
+        # print(float(nr)/float(100))
+        name = f.split(".")[0]
+        # name = "n07739125_4157"
 
-    print("Proportion of processed images: {}".format(float(nr)/float(len(fs))))
-    # print(float(nr)/float(100))
-    name = f.split(".")[0]
-    # name = "n07739125_4157"
+        xmlfile = xml_dir + name + ".xml"
+        imgfile = img_dir + name + ".JPEG"
 
-    xmlfile = xml_dir + name + ".xml"
-    imgfile = img_dir + name + ".JPEG"
+        aug_xmlfile = aug_xml_dir + name + ".xml"
+        aug_imgfile = aug_img_dir + name + ".JPEG"
 
-    aug_xmlfile = aug_xml_dir + name + ".xml"
-    aug_imgfile = aug_img_dir + name + ".JPEG"
+        xml = BeautifulSoup(open(xmlfile, 'r').read(), "lxml").annotation
+        img = Image.open(imgfile)
 
-    xml = BeautifulSoup(open(xmlfile, 'r').read(), "lxml").annotation
-    img = Image.open(imgfile)
+        ret_images = []
+        ret_labels = []
 
-    # saving original files
-    with open(aug_xmlfile, 'w') as myfile:
-        myfile.write(str(xml))
-    img.save(aug_imgfile)
+        xmin = int(xml.find("xmin").contents[0])
+        ymin = int(xml.find("ymin").contents[0])
+        xmax = int(xml.find("xmax").contents[0])
+        ymax = int(xml.find("ymax").contents[0])
 
-    xmin = int(xml.find("xmin").contents[0])
-    ymin = int(xml.find("ymin").contents[0])
-    xmax = int(xml.find("xmax").contents[0])
-    ymax = int(xml.find("ymax").contents[0])
-
-    # augmenting original image
-    if len(xml.find_all("object"))==1:
-        outs = transform_image(img, xmin, ymin, xmax, ymax, times_added=[40,60,80,140])
-        for trains_id, out in enumerate(outs):
-            name1 = name + "_" + str(trains_id)
-            aug_xmlfile = aug_xml_dir + name1 + ".xml"
-            aug_imgfile = aug_img_dir + name1 + ".JPEG"
-
-            # modifying image
-            img1, xmin1, ymin1, xmax1, ymax1 = out
-
-            # modifying xml file
-            xml1 = BeautifulSoup(str(xml), "lxml").annotation
-            change_filname(xml1.filename,"filename",name1)
-            change_filname(xml1.xmin,"xmin",str(xmin1))
-            change_filname(xml1.ymin,"ymin",str(ymin1))
-            change_filname(xml1.xmax,"xmax",str(xmax1))
-            change_filname(xml1.ymax,"ymax",str(ymax1))
-
-            # saving augmented data
+        if save:
+            # saving original files
             with open(aug_xmlfile, 'w') as myfile:
-                myfile.write(str(xml1))
-            # print("xmin1, ymin1, xmax1, ymax1  ",(xmin1, ymin1, xmax1, ymax1))
-            # print("img1.size ",img1.size)
-            # draw1 = ImageDraw.Draw(img1)
-            # draw1.rectangle([xmin1, ymin1, xmax1, ymax1],outline=(255,0,0))
+                myfile.write(str(xml))
+            img.save(aug_imgfile)
+        else:
+            ret_images = [img]
+            ret_labels = [[xmin, ymin, xmax, ymax]]
 
-            # resizes images if their resolution too high
-            w, h = img.size
-            if w>1000:
-                coef = float(w)/1000.0
-                w = 1000
-                h = int(float(h)/coef)
-            if h>1000:
-                coef = float(h)/1000.0
-                h = 1000
-                w = int(float(w)/coef)
-            img1 = img1.resize((w,h),Image.ANTIALIAS)
-            img1.save(aug_imgfile)
+        # augmenting original image
+        if len(xml.find_all("object"))==1:
+            outs = transform_image(img, xmin, ymin, xmax, ymax, times_added=[40,60,80,140])
+            for trains_id, out in enumerate(outs):
+                name1 = name + "_" + str(trains_id)
+                aug_xmlfile = aug_xml_dir + name1 + ".xml"
+                aug_imgfile = aug_img_dir + name1 + ".JPEG"
 
+                print('aaa', aug_xmlfile)
+
+                # modifying image
+                img1, xmin1, ymin1, xmax1, ymax1 = out
+
+                # modifying xml file
+                if save:
+                    xml1 = BeautifulSoup(str(xml), "lxml").annotation
+                    change_filname(xml1.filename,"filename",name1)
+                    change_filname(xml1.xmin,"xmin",str(xmin1))
+                    change_filname(xml1.ymin,"ymin",str(ymin1))
+                    change_filname(xml1.xmax,"xmax",str(xmax1))
+                    change_filname(xml1.ymax,"ymax",str(ymax1))
+
+                    # saving augmented data
+                    with open(aug_xmlfile, 'w') as myfile:
+                        myfile.write(str(xml1))
+                else:
+                    ret_labels.append([xmin1, ymin1, xmax1, ymax1])
+
+                # print("xmin1, ymin1, xmax1, ymax1  ",(xmin1, ymin1, xmax1, ymax1))
+                # print("img1.size ",img1.size)
+                # draw1 = ImageDraw.Draw(img1)
+                # draw1.rectangle([xmin1, ymin1, xmax1, ymax1],outline=(255,0,0))
+
+                # resizes images if their resolution too high
+                w, h = img.size
+                if w>1000:
+                    coef = float(w)/1000.0
+                    w = 1000
+                    h = int(float(h)/coef)
+                if h>1000:
+                    coef = float(h)/1000.0
+                    h = 1000
+                    w = int(float(w)/coef)
+                img1 = img1.resize((w,h),Image.ANTIALIAS)
+
+                if save:
+                    img1.save(aug_imgfile)
+                else:
+                    ret_images.append(img1)
+        
+    return ret_images, ret_labels
+
+if __name__ == '__main__':
+
+    # input data directory
+    input_img_dir = sys.argv[1]
+    input_xml_dir = sys.argv[2]
+    
+    output_dir = sys.argv[3]
+
+    output_img_dir = os.path.join(output_dir, 'images/')
+    output_xml_dir = os.path.join(output_dir, 'labels/')
+
+    if not os.path.exists(output_img_dir):
+        os.makedirs(output_img_dir)
+    
+    if not os.path.exists(output_xml_dir):
+        os.makedirs(output_xml_dir)
+
+    batch_transform(input_img_dir, input_xml_dir, output_img_dir, output_xml_dir, save=True)
