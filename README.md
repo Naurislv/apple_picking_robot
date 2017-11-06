@@ -4,7 +4,7 @@ Creating autonomous robot for given size apples pitching in controlled indoor en
 
 ## Project structure
 
-* [data/](data/) used thought project. Usually we ignore data stored there from .git perspective.
+* [data/](data/) used throughout project. Usually we ignore data stored there from .git perspective.
 * [docs/](docs/) project documentations. All topics we want to be documented. See [Docs](#docs) table of content.
 * Scientific [papers/](papers/) and [reviews](papers/PaperReview.md). Usually you give and share papers using url but there are some papers which we may want to store in repository.
 * [presentations/](presentations/) by team members.

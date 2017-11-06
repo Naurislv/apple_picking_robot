@@ -134,7 +134,7 @@ Code: https://github.com/kwotsin/TensorFlow-ENet
 
 Spotted mistake in 4th page, Decoder size section (2, 3 line), should be "as the decoder is an exact mirror of the encoder" and not "as the encoder is an exact mirror of the encoder".
 
-Great paper!
+See also https://arxiv.org/pdf/1505.04366.pdf to understand basics of FCN, deconvolution and max unpooling
 
 ### Abstract
 
