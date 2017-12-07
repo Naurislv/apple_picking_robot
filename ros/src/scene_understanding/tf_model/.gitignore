@@ -1,0 +1,2 @@
+# Ignore binary model which can be downloaded here: 
+frozen_inference_graph.pb

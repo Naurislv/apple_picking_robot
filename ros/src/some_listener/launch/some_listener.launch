@@ -1,4 +1,0 @@
-<?xml version="1.0"?>
-<launch>
-    <node pkg="some_listener" type="some_listener.py" name="some_listener" output="screen" cwd="node"/>
-</launch>

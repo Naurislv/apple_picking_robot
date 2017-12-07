@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <launch>
     
-    <include file="$(find images_proc)/launch/images_proc.launch"/>
+    <include file="$(find image_proc)/launch/image_proc.launch"/>
     <include file="$(find hello_world)/launch/hello_world.launch"/>
-    <include file="$(find some_listener)/launch/some_listener.launch"/>
+    <include file="$(find scene_understanding)/launch/scene_understanding.launch"/>
     
 </launch>
 

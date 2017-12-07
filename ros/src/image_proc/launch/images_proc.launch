@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<launch>
+    <node pkg="images_proc_node" type="images_proc_node.py" name="images_proc_node" output="screen" cwd="node"/>
+</launch>
