@@ -5,7 +5,8 @@ import time
 
 # Dependecy imports
 import rospy
-from std_msgs.msg  import Int32
+from sensor_msgs.msg import Image
+from cv_bridge import CvBridge
 
 import numpy as np
 import cv2
@@ -26,7 +27,8 @@ class ImageProc(object):
         else:
             rospy.loginfo('Cannot read image')
 
-        self.im_pub = rospy.Publisher('imagedata', Int32, queue_size=3)
+        self.bridge = CvBridge() # Convert numpy array to ROS msg
+        self.im_pub = rospy.Publisher('imagedata', Image, queue_size=1)
         self.loop()
 
     def loop(self):
@@ -35,9 +37,10 @@ class ImageProc(object):
         # TODO: Create similarrly rospy.set_param somewhere
         rate = rospy.Rate(rospy.get_param('/image_refresh_rate', 5))
         while not rospy.is_shutdown():
-            im = self.im_stream.grab_frame(width=400)
+            image_array = self.im_stream.grab_frame(width=400)
 
-            self.im_pub.publish(im)
+            image_message = self.bridge.cv2_to_imgmsg(image_array, encoding="rgb8")
+            self.im_pub.publish(image_message)
             rate.sleep()
 
 if __name__ == '__main__':

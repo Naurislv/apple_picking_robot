@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package>
-  <name>some_listener</name>
+  <name>scene_understanding</name>
   <version>0.0.0</version>
-  <description>Image processing listener</description>
+  <description>Scene understanding node</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->

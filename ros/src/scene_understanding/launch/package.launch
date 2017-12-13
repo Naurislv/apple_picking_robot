@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<launch>
+    <node pkg="scene_understanding" type="scene_understanding_node.py" name="scene_understanding" output="screen" cwd="node"/>
+</launch>

@@ -1,11 +1,11 @@
+#!/usr/bin/env python
 """Detect human hands in natural images."""
 
 # Standard imports
-import time
-import sys
+import pprint
 
-sys.path.append('./utils/')
-
+# sys.path.append('/home/nauris/Dropbox/coding/apple_picking_robot/ros/src/scene_understanding/')
+# print(sys.path)
 # pylint: disable=C0413
 
 # Dependecy imports
@@ -31,7 +31,9 @@ class Localizator(object):
         categories = label_map_util.convert_label_map_to_categories(
             label_map, max_num_classes=1000, use_display_name=True)
         self.category_index = label_map_util.create_category_index(categories)
-        print(self.category_index)
+
+        _pp = pprint.PrettyPrinter(indent=1)
+        _pp.pprint(self.category_index)
 
     def run(self, image_array, class_prob):
         """Run hand detection."""
@@ -69,9 +71,7 @@ class Localizator(object):
             line_thickness=2
         )
 
-        nobjects = classes[scores > class_prob]
-
-        return image_array, nobjects
+        return image_array
 
     def _load_model(self, frozen_model_path):
         detection_graph = tf.Graph()

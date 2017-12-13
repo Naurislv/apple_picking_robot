@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 """Read image frame from integrated webcamera.
 """
 

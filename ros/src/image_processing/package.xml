@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package>
-  <name>images_proc</name>
+  <name>image_processing</name>
   <version>0.0.0</version>
   <description>Image processing package</description>
 
