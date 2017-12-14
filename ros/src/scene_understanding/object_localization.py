@@ -1,12 +1,8 @@
 #!/usr/bin/env python
-"""Detect human hands in natural images."""
+"""Detect objects in natural images."""
 
 # Standard imports
 import pprint
-
-# sys.path.append('/home/nauris/Dropbox/coding/apple_picking_robot/ros/src/scene_understanding/')
-# print(sys.path)
-# pylint: disable=C0413
 
 # Dependecy imports
 import tensorflow as tf
