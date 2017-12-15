@@ -9,7 +9,7 @@ Creating autonomous robot for given size apples pitching in controlled indoor en
 * Scientific [papers/](papers/) and [reviews](papers/PaperReview.md). Usually you give and share papers using url but there are some papers which we may want to store in repository.
 * [presentations/](presentations/) by team members.
 * [ros/](ros/) (Robot Operating System) used for inference with Virtual Environments or Robots
-* [experiments/](experiments/) contains of different experiments such as training neural network, preparing datasets etc.
+* [experiments/](experiments/) consists of different experiments such as training neural network, preparing datasets etc.
 * [weekly_retrospects/](weekly_retrospects/). Short descriptions of what we've talked in weekly meetings.
 
 ## Run
@@ -31,3 +31,11 @@ In Progress: Create table of all team members
 |     Image              |     Role      |      Name      |    Location   | LinkedIn    |     email   |
 |------------------------|---------------|----------------|---------------|-------------|-------------|
 | <img src="./images/nauris_dorbe.jpg" alt="Nauris Dorbe" width="150" height="150"> |__ML, Autonomy__| Nauris Dorbe | Latvia, Riga | [Nauris](https://www.linkedin.com/in/naurisdorbe) | <naurisdorbe@gmail.com> |
+
+# Our story
+
+## [NIPS](https://nips.cc/)(Neural Information Processing Systems) conference 2017
+
+We've been there.
+
+https://github.com/LUMII-AILab/dBaby
