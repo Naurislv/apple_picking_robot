@@ -22,7 +22,8 @@ If you experience missing package error feel free to google and install it. Usua
 
 1. [Robot (real and virtual environment) software and hardware architectures](docs/ArchitectureProposal.md) and related paper reviews.
 2. [Intro to ROS](docs/ROS.md)
-3. [UnrealEngine4](docs/UnrealEngine4.md)
+3. How to use [Docker](docs/Docker.md) for this project.
+4. [UnrealEngine4](docs/UnrealEngine4.md)
 
 # The Team
 
