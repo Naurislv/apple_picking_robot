@@ -14,7 +14,8 @@ Creating autonomous robot for given size apples pitching in the controlled indoo
 
 ## Run
 
-`bash ros/run_apple_picker.sh` - open to see comments for more info
+1. Follow [first time run](docs/Docker.md) instructions to install and setup pre-installed Docker image.
+2. From Docker image apple_picking_robot directory run `bash ros/run_apple_picker.sh` (open to see comments for more info)
 
 If you experience missing package error feel free to google and install it. Usually you should be able to install using `sudo apt-get package install ...` command line.
 
@@ -35,8 +36,6 @@ In Progress: Create table of all team members
 
 # Our story
 
-## [NIPS](https://nips.cc/)(Neural Information Processing Systems) conference 2017
+## [NIPS](https://nips.cc/) (Neural Information Processing Systems) conference 2017
 
-We've been there.
-
-https://github.com/LUMII-AILab/dBaby
+We've been there with [dBaby](https://github.com/LUMII-AILab/dBaby)
