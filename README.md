@@ -15,7 +15,7 @@ Creating autonomous robot for given size apples pitching in the controlled indoo
 ## Run
 
 1. Follow [first time run](docs/Docker.md) instructions to install and setup pre-installed Docker image.
-2. From Docker image apple_picking_robot directory run `bash ros/run_apple_picker.sh` (open to see comments for more info)
+2. From Docker image apple_picking_robot directory run `bash ros/run_apple_picker.sh` (open to see comments)
 
 If you experience missing package error feel free to google and install it. Usually you should be able to install using `sudo apt-get package install ...` command line.
 
