@@ -12,7 +12,7 @@ Basically Docker is pre-installed image which can be run on any OS. It's like li
 
 [Download](https://docs.docker.com/engine/installation/) right Docker version for your machine and follow instructions to install it. After Docker is installed it's wise to inspect settings. If Docker is not running already then run Docker, it will automatically allocate default (configuration) resources. Open preferences and carefully inspect them. Perhaps the most important section is called "Advanced", there you can see resources Docker will use on your machine as well as path where it will store all pulled images.
 
-Now we can start to use any public image. ROS already provide Ubuntu with pre installed ROS. Follow [instructions](http://wiki.ros.org/docker/Tutorials/Docker) to get started with ROS image on Docker. [This](https://www.youtube.com/watch?v=9xqekKwzmV8) YouTube video also might be helpful. In our project however we have already pre-installed everything so you dont need to install this ROS package. See next section on how to setup Docker with our pre-installed image.
+See next section on how to setup Docker with our pre-installed image. Note that ROS already provide Ubuntu with pre-installed ROS. See [tutorial](http://wiki.ros.org/docker/Tutorials/Docker) for more info. [This](https://www.youtube.com/watch?v=9xqekKwzmV8) YouTube video also might be helpful. In our project however we have already pre-installed everything so you dont need to install this ROS package.
 
 ## Setup
 
