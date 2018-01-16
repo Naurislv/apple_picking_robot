@@ -4,15 +4,15 @@ Here we cover basics of how to use Docker on any OS and to set-up it with our do
 
 As we are working in team we should all be able to reproduce results. Often it's hard to reproduce results because each of team member is using different OS (and version), different environment set-up etc. [Docker](https://www.docker.com/) to rescue.
 
-Basically Docker is pre-installed image which can be run on any OS. It's like light weight VirtualBox. Good thing about Docker is that it works like Git. You can make changes and them commit them and upload for everyone to pull it with all history.
+Basically Docker is pre-installed image which can be run on any OS. It's like light weight VirtualBox. Good thing about Docker is that it works like Git. You can make changes and then commit them and upload for everyone to pull it with all history.
 
 # First time run
 
 ## Installing Docker on your machine
 
-[Download](https://docs.docker.com/engine/installation/) right Docker version for your machine and follow instructions in install it. After you have successfully installed Docker we need to pull ROS image in the Docker. After Docker is installed it's wise to inspect settings. If Docker is not running already then run Docker, it will automatically allocate default (configuration) resources. Open preferences and carefully inspect them. Perhaps the most important section is called "Advanced", there you can see resources Docker will you from your machine as well as path where it will store all pulled images.
+[Download](https://docs.docker.com/engine/installation/) right Docker version for your machine and follow instructions to install it. After Docker is installed it's wise to inspect settings. If Docker is not running already then run Docker, it will automatically allocate default (configuration) resources. Open preferences and carefully inspect them. Perhaps the most important section is called "Advanced", there you can see resources Docker will use on your machine as well as path where it will store all pulled images.
 
-Now we can start to use any public image. ROS already provide Ubuntu with pre installed ROS packages. Follow [instructions](http://wiki.ros.org/docker/Tutorials/Docker) to get started with ROS image and Docker. [This](https://www.youtube.com/watch?v=9xqekKwzmV8) YouTube video might be helpful.
+Now we can start to use any public image. ROS already provide Ubuntu with pre installed ROS. Follow [instructions](http://wiki.ros.org/docker/Tutorials/Docker) to get started with ROS image on Docker. [This](https://www.youtube.com/watch?v=9xqekKwzmV8) YouTube video also might be helpful. In our project however we have already pre-installed everything so you dont need to install this ROS package. See next section on how to setup Docker with our pre-installed image.
 
 ## Setup
 
