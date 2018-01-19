@@ -21,6 +21,7 @@ See next section on how to setup Docker with our pre-installed image. Note that 
 2. Run that image: `docker run -it naurislv/apple_picking_robot:latest`
 3. Now you are in Docker image terminal. Navigate to home directory: `cd /home/apple_picker`
 4. Clone Git repository and other necesarry things: `bash clone_apple_picker.sh`
+5. Navigate to ROS source directory and run script: `cd apple_picking_robot/ros/ && bash run_apple_picker.sh`
 
 # Docker Help
 
