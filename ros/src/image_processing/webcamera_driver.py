@@ -42,7 +42,7 @@ class WebCamera(object):
             # the timestamp and occupied/unoccupied text
             _, frame = self.video_capture.read()
         else:
-            frame = np.zeros((25, 25, 3))
+            frame = np.zeros((25, 25, 3), dtype=np.uint8)
 
         # resize the frame, convert it to grayscale, and blur it
         if width is not None:
