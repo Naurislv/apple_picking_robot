@@ -8,6 +8,7 @@ import time
 
 # Dependency imports
 import rospy
+import numpy as np
 
 import imutils
 import cv2
@@ -28,11 +29,20 @@ class WebCamera(object):
         rospy.loginfo('Wait for webcamera to warm up...')
         time.sleep(warm_up_time)
 
+        _, frame = self.video_capture.read()
+        if frame is None: # If nothing is captured then no camera detected
+            self.video_capture = None
+            rospy.logwarn('WEB camera is not detected therefor zero numpy arrays will be created!')
+
     def grab_frame(self, width=None):
         """Run programs main loop."""
-        # grab the raw NumPy array representing the image and initialize
-        # the timestamp and occupied/unoccupied text
-        _, frame = self.video_capture.read()
+
+        if self.video_capture is not None:
+            # grab the raw NumPy array representing the image and initialize
+            # the timestamp and occupied/unoccupied text
+            _, frame = self.video_capture.read()
+        else:
+            frame = np.zeros((25, 25, 3))
 
         # resize the frame, convert it to grayscale, and blur it
         if width is not None:
