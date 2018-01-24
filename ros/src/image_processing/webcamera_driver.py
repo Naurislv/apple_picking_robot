@@ -5,6 +5,7 @@
 
 # Standard import
 import time
+import os
 
 # Dependency imports
 import rospy
@@ -31,8 +32,14 @@ class WebCamera(object):
 
         _, frame = self.video_capture.read()
         if frame is None: # If nothing is captured then no camera detected
-            self.video_capture = None
-            rospy.logwarn('WEB camera is not detected therefor zero numpy arrays will be created!')
+
+            if os.path.isfile('test_video.mp4'):
+                self.video_capture = cv2.VideoCapture('test_video.mp4')
+                rospy.logwarn('WEB camera is not detected therefor test_video.mp4 will be used!')
+            else:
+                self.video_capture = None
+                rospy.logwarn("WEB camera is not detected therefor zero numpy arrays will be "
+                              "created!")
 
     def grab_frame(self, width=None):
         """Run programs main loop."""
