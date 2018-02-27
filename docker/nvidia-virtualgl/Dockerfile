@@ -40,6 +40,7 @@ WORKDIR /root/apple_picking_robot/ros
 RUN /bin/bash -c ' \
     source /opt/ros/$ROS_DISTRO/setup.bash ; \
     ROS_PACKAGE_PATH=$PWD:$ROS_PACKAGE_PATH ; \
+    apt-get install -y ros-kinetic-rqt-image-view ; \
     rosdep -y -i install turtlebot3_description turtlebot3_navigation turtlebot3_fake turtlebot3_gazebo && \
     catkin_make \
 '
