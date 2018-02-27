@@ -10,7 +10,6 @@ Creating autonomous robot for given size apples pitching in the controlled indoo
 * [presentations/](presentations/) by team members.
 * [ros/](ros/) (Robot Operating System) used for inference with Virtual Environments or Robots
 * [experiments/](experiments/) consists of different experiments such as training neural network, preparing datasets etc.
-* [weekly_retrospects/](weekly_retrospects/). Short descriptions of what we've talked in weekly meetings.
 
 ## Run
 
