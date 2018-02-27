@@ -14,14 +14,36 @@ Basically Docker is pre-installed image which can be run on any OS. It's like li
 
 See next section on how to setup Docker with our pre-installed image. Note that ROS already provide Ubuntu with pre-installed ROS. See [tutorial](http://wiki.ros.org/docker/Tutorials/Docker) for more info. [This](https://www.youtube.com/watch?v=9xqekKwzmV8) YouTube video also might be helpful. In our project however we have already pre-installed everything so you dont need to install this ROS package.
 
-## Setup
+# Seting up ROS Docker image with VNC support for GUI
 
-0. Register and login into Docker Hub
-1. Pull image to default dokcer image directory: `docker pull naurislv/apple_picking_robot`
-2. Run that image: `docker run -it naurislv/apple_picking_robot:latest`
-3. Now you are in Docker image terminal. Navigate to home directory: `cd /home/apple_picker`
-4. Clone Git repository and other necesarry things: `bash clone_apple_picker.sh`
-5. Navigate to ROS source directory and run script: `cd apple_picking_robot/ros/ && bash run_apple_picker.sh`
+Origin Docker image used: https://hub.docker.com/r/ct2034/vnc-ros-kinetic-full/
+
+1. Download and run: `docker run -it -p 6080:80 ct2034/vnc-ros-kinetic-full`
+2. Open in browser: http://127.0.0.1:6080 and open terminal
+3. Update, upgrade and install packages
+
+    ```
+    sudo apt-get update && sudo apt-get upgrade
+    sudo apt-get install nano wget
+    sudo apt-get install ros-kinetic-turtlebot*
+
+    # Reference: http://gazebosim.org/tutorials?cat=install&tut=install_ubuntu&ver=7.0#Alternativeinstallation:step-by-step
+    
+    sudo sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list'
+    cat /etc/apt/sources.list.d/gazebo-stable.list
+    wget http://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add -
+    sudo apt-get update
+    sudo apt-get install gazebo7
+
+    pip install --upgrade pip
+    pip install imutils tensorflow
+    ```
+4. Setup apple_picker repository
+
+    ```
+    cd /home
+    git clone https://github.com/Naurislv/apple_picking_robot.git
+    ```
 
 # Docker Help
 
@@ -53,3 +75,10 @@ Example:
 2. `docker push naurislv/apple_picking_robot:latest`
 
 ## Useful Docker commands
+
+* View all images: `docker images`
+* View all containers: `docker ps -a`
+* Run image with with terminal: `docker run -it IMAGE_ID`
+* Start container: `docker start CONTAINER_ID`
+* Open bash terminal on running container: `docker exec -i -t CONTAINER_ID /bin/bash`
+* Remove all containers: `docker rm $(docker ps -a -q)`

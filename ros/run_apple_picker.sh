@@ -167,7 +167,7 @@ export TURTLEBOT3_MODEL=burger
 
 if [ ! -z "$RQT" ] # If input argument provided
 then
-    sleep 2 && rqt_image_view &
+    sleep 2 && rqt &
 fi
 
 # Run our porject ROS launch
