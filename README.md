@@ -16,8 +16,8 @@ Creating autonomous robot for given size apples pitching in the controlled indoo
 
 1. Follow [first time run](docs/Docker.md) instructions to install and setup pre-installed Docker image.
 2. Running project.
-    - First navigate to ros directory: `cd ros`
-    - Run `./run_apple_picker.sh --help` to see all possible input arguments:
+    * First navigate to ros directory: `cd ros`
+    * Run `./run_apple_picker.sh --help` to see all possible input arguments:
 
     ```
     Apple Picker
@@ -39,7 +39,7 @@ Creating autonomous robot for given size apples pitching in the controlled indoo
     Example: ./run_apple_picker --rviz=true
     Example: ./run_apple_picker -rv true
     ```
-    - Run script with arguments e.g.: `./run_apple_picker.sh -r true -kb true -w dbaby`
+    * Run script with arguments e.g.: `./run_apple_picker.sh -r true -kb true -w dbaby`
 
 ## Docs
 

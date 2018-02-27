@@ -19,8 +19,8 @@ while test $# -gt 0; do
       echo "-gg, --gazebo_gui=bool             if true then run gazebo GUI"
       echo "-yt, --youtube=LINK                download youtube (LINK) video and copy it experiment directory"
       echo " "
-      echo "Example: ./run_apple_picker --rviz=true"
-      echo "Example: ./run_apple_picker -rv true"
+      echo "Example: ./run_apple_picker.sh -r true -kb true -w dbaby"
+      echo "Example: ./run_apple_picker.sh -rqt=true -keyboard=true -world=dbaby"
       exit 0
       ;;
     -rv)
