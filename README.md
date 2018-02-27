@@ -33,7 +33,7 @@ Creating autonomous robot for given size apples pitching in the controlled indoo
     -c,  --camera=bool                 if true then physical camera connected and no virtual env will be launched
     -su, --scene_understanding=bool    if true then scene_understanding will be launched
     -kb, --keyboard=bool               if true then run keyboard package for controlig Gazebo
-    -w,  --world=WORLD                 choose turtlebot world. empty | original | dbaby
+    -w,  --world=WORLD                 choose turtlebot world. empty | original | dbaby | None
     -gg, --gazebo_gui=bool             if true then run gazebo GUI
     -yt, --youtube=LINK                download youtube (LINK) video and copy it experiment directory
 
