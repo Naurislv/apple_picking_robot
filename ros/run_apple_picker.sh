@@ -1,5 +1,138 @@
 #!/bin/bash
 
+while test $# -gt 0; do
+  case "$1" in
+    -h|--help)
+      echo "Apple Picker"
+      echo " "
+      echo "$package [options] application [arguments]"
+      echo " "
+      echo "options:"
+      echo " "
+      echo "-h,  --help                        show brief help"
+      echo "-rv, --rviz=bool                   if true then run ROS rviz GUI"
+      echo "-r,  --rqt=bool                    if true then run ROS rqt_image_view"
+      echo "-c,  --camera=bool                 if true then physical camera connected and no virtual env will be launched"
+      echo "-su, --scene_understanding=bool    if true then scene_understanding will be launched"
+      echo "-kb, --keyboard=bool               if true then run keyboard package for controlig Gazebo"
+      echo "-w,  --world=WORLD                 choose turtlebot world. empty | original | dbaby"
+      echo "-gg, --gazebo_gui=bool             if true then run gazebo GUI"
+      echo "-yt, --youtube=LINK                download youtube (LINK) video and copy it experiment directory"
+      echo " "
+      echo "Example: ./run_apple_picker --rviz=true"
+      echo "Example: ./run_apple_picker -rv true"
+      exit 0
+      ;;
+    -rv)
+      shift
+      if test $# -gt 0; then
+        export RVIZ=$1
+      else
+        exit 1
+      fi
+      shift
+      ;;
+    --rviz*)
+      export RVIZ=`echo $1 | sed -e 's/^[^=]*=//g'`
+      shift
+      ;;
+    -yt)
+      shift
+      if test $# -gt 0; then
+        export YOUTUBE=$1
+      else
+        exit 1
+      fi
+      shift
+      ;;
+    --youtube*)
+      export YOUTUBE=`echo $1 | sed -e 's/^[^=]*=//g'`
+      shift
+      ;;
+    -kb)
+      shift
+      if test $# -gt 0; then
+        export KEYBOARD=$1
+      else
+        exit 1
+      fi
+      shift
+      ;;
+    --keyboard*)
+      export KEYBOARD=`echo $1 | sed -e 's/^[^=]*=//g'`
+      shift
+      ;;
+    -w)
+      shift
+      if test $# -gt 0; then
+        export WORLD=$1
+      else
+        exit 1
+      fi
+      shift
+      ;;
+    --world*)
+      export WORLD=`echo $1 | sed -e 's/^[^=]*=//g'`
+      shift
+      ;;
+    -gg)
+      shift
+      if test $# -gt 0; then
+        export GAZEBO_GUI=$1
+      else
+        exit 1
+      fi
+      shift
+      ;;
+    --gazebo_gui*)
+      export GAZEBO_GUI=`echo $1 | sed -e 's/^[^=]*=//g'`
+      shift
+      ;;
+    -c)
+      shift
+      if test $# -gt 0; then
+        export CAMERA=$1
+      else
+        exit 1
+      fi
+      shift
+      ;;
+    --camera*)
+      export CAMERA=`echo $1 | sed -e 's/^[^=]*=//g'`
+      shift
+      ;;
+    -su)
+      shift
+      if test $# -gt 0; then
+        export SCENE_UNDERSTANDING=$1
+      else
+        exit 1
+      fi
+      shift
+      ;;
+    --scene_understanding*)
+      export SCENE_UNDERSTANDING=`echo $1 | sed -e 's/^[^=]*=//g'`
+      shift
+      ;;
+    -r)
+      shift
+      if test $# -gt 0; then
+        export RQT=$1
+      else
+        exit 1
+      fi
+      shift
+      ;;
+    --rqt*)
+      export RQT=`echo $1 | sed -e 's/^[^=]*=//g'`
+      shift
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
 # File directory full path
 SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
 cd ${SCRIPTPATH} # navigate to this directory
@@ -7,12 +140,10 @@ cd ${SCRIPTPATH} # navigate to this directory
 # For this you have youtube-dl to be installed
 # https://github.com/rg3/youtube-dl/
 
-yt_video_path=$1
-
-if [ ! -z "$yt_video_path" ] # If input argument provided
-  then
-    echo "Will Download youtube video: $yt_video_path"
-    youtube-dl --audio-quality 0 --output "src/image_processing/test_video.%(ext)s" $yt_video_path
+if [ ! -z "$YOUTUBE" ] # If input argument provided
+then
+    echo "Will Download youtube video: $YOUTUBE"
+    youtube-dl --audio-quality 0 --output "src/image_processing/test_video.%(ext)s" $YOUTUBE
     echo "Video saved in src/image_processing/"
 fi
 
@@ -26,5 +157,10 @@ source devel/setup.sh
 # Use burger Turtlebot model
 export TURTLEBOT3_MODEL=burger
 
+if [ ! -z "$RQT" ] # If input argument provided
+then
+    rqt_image_view &
+fi
+
 # Run our porject ROS launch
-roslaunch launch/project.launch
+roslaunch launch/project.launch keyboard:=$KEYBOARD rviz:=$RVIZ world:=$WORLD gazebo_gui:=$GAZEBO_GUI camera:=$CAMERA scene_understanding:=$SCENE_UNDERSTANDING

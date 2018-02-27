@@ -1,5 +1,34 @@
 <?xml version="1.0"?>
 <launch>
-    <include file="$(find teleop_twist_keyboard)/launch/package.launch"/>
-    <include file="$(find turtlebot3_gazebo)/launch/turtlebot3_apple_dbaby_world.launch"/>
+
+    <!-- declare input arguments to be passed in -->
+    <arg name="keyboard" default="false"/>
+    <arg name="rviz" default="false"/>
+    <arg name="gazebo_gui" default="false"/>
+    <arg name="world" default=""/>
+    <arg name="camera" default="false"/>
+    <arg name="scene_understanding" default="false"/>
+
+    <!-- Launch ROS packages based on input arguments -->
+
+    <!-- Gazebo / Turtlebot related stuff -->
+    <include file="$(find teleop_twist_keyboard)/launch/package.launch" if="$(eval keyboard == true)"/>
+    <include file="$(find turtlebot3_gazebo)/launch/turtlebot3_gazebo_rviz.launch" if="$(eval rviz == true)"/>
+
+    <include file="$(find turtlebot3_gazebo)/launch/turtlebot3_apple_dbaby_world.launch" if="$(eval world == 'dbaby')">
+        <arg name="gazebo_gui" value="$(arg gazebo_gui)"/>
+    </include>
+
+    <include file="$(find turtlebot3_gazebo)/launch/turtlebot3_empty_world.launch" if="$(eval world == 'empty')">
+        <arg name="gazebo_gui" value="$(arg gazebo_gui)"/>
+    </include>
+    
+    <include file="$(find turtlebot3_gazebo)/launch/turtlebot3_world.launch" if="$(eval world == 'original')">
+        <arg name="gazebo_gui" value="$(arg gazebo_gui)"/>
+    </include>
+
+    <!-- Camera, image processing related stuff -->
+    <include file="$(find image_processing)/launch/package.launch" if="$(eval camera == true)"/>
+    <include file="$(find scene_understanding)/launch/package.launch" if="$(eval scene_understanding == true)"/>
+
 </launch>

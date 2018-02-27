@@ -15,9 +15,31 @@ Creating autonomous robot for given size apples pitching in the controlled indoo
 ## Run
 
 1. Follow [first time run](docs/Docker.md) instructions to install and setup pre-installed Docker image.
-2. From Docker image apple_picking_robot directory run `bash ros/run_apple_picker.sh` (open to see comments)
+2. Running project.
+    - First navigate to ros directory: `cd ros`
+    - Run `./run_apple_picker.sh --help` to see all possible input arguments:
 
-If you experience missing package error feel free to google and install it. Usually you should be able to install using `sudo apt-get package install ...` command line.
+    ```
+    Apple Picker
+
+    [options] application [arguments]
+
+    options:
+
+    -h,  --help                        show brief help
+    -rv, --rviz=bool                   if true then run ROS rviz GUI
+    -r,  --rqt=bool                    if true then run ROS rqt_image_view
+    -c,  --camera=bool                 if true then physical camera connected and no virtual env will be launched
+    -su, --scene_understanding=bool    if true then scene_understanding will be launched
+    -kb, --keyboard=bool               if true then run keyboard package for controlig Gazebo
+    -w,  --world=WORLD                 choose turtlebot world. empty | original | dbaby
+    -gg, --gazebo_gui=bool             if true then run gazebo GUI
+    -yt, --youtube=LINK                download youtube (LINK) video and copy it experiment directory
+
+    Example: ./run_apple_picker --rviz=true
+    Example: ./run_apple_picker -rv true
+    ```
+    - Run script with arguments e.g.: `./run_apple_picker.sh -r true -kb true -w dbaby`
 
 ## Docs
 
