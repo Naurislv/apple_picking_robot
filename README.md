@@ -37,7 +37,7 @@ Creating autonomous robot for given size apples pitching in the controlled indoo
     -yt, --youtube=LINK                download youtube (LINK) video and copy it experiment directory
 
     Example: ./run_apple_picker.sh -r true -kb true -w dbaby
-    Example: ./run_apple_picker.sh -rqt=true -keyboard=true -world=dbaby
+    Example: ./run_apple_picker.sh --rqt=true --keyboard=true --world=dbaby
     ```
     * Run script with arguments e.g.: `./run_apple_picker.sh -r true -kb true -w dbaby`
 
