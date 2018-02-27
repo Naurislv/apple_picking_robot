@@ -12,7 +12,7 @@ yt_video_path=$1
 if [ ! -z "$yt_video_path" ] # If input argument provided
   then
     echo "Will Download youtube video: $yt_video_path"
-    youtube-dl --audio-quality 1 --output "src/image_processing/test_video.%(ext)s" $yt_video_path
+    youtube-dl --audio-quality 0 --output "src/image_processing/test_video.%(ext)s" $yt_video_path
     echo "Video saved in src/image_processing/"
 fi
 

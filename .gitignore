@@ -7,3 +7,6 @@ ros/.catkin_workspace
 
 # Ignore Jupyter checkpoints
 .ipynb_checkpoints
+
+# MAC OS related metadata storing file
+.DS_Store

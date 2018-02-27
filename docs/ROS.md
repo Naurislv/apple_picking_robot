@@ -63,6 +63,8 @@ Displaying images using rqt:
 2. Run `roscore` from terminal, if it is not already running
 3. Run `rqt_image_view` from terminal. GUI should pop up and then just choose right topic.
 
+Find more info: http://wiki.ros.org/rqt_image_view
+
 ## Setup ROS
 
 There are many tutorials how to setup ROS so we will not go into details but rather point out some issues we had.

@@ -35,6 +35,8 @@ Once image is running Docker creates container. All running containers can be se
 
 From time to time you may want to remove images and / or containers. To remove single image run `docker rmi IMAGE_ID`, to remove all containers run `docker rm $(docker ps -aq)`.
 
+Connect with additinal bash terminal to container: `docker exec -it CONTAINER_ID bash`
+
 ## Committing changes to images
 
 Here is official documentation and example of [commit command for Docker](https://docs.docker.com/engine/reference/commandline/commit/)
