@@ -1,3 +1,0 @@
-
-# Install turtlebot
-sudo apt-get install -y ros-kinetic-turtlebot*

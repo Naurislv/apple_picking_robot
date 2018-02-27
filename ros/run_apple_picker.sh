@@ -137,6 +137,14 @@ done
 SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
 cd ${SCRIPTPATH} # navigate to this directory
 
+# Download tensorflow model and move it to apple_picking_robot ros src directory if does not exist
+if [ ! -f src/scene_understanding/tf_model/frozen_inference_graph.pb ] && [ "$SCENE_UNDERSTANDING" = "true" ]; then
+    wget http://download.tensorflow.org/models/object_detection/ssd_mobilenet_v1_coco_2017_11_17.tar.gz
+    tar -xvzf ssd_mobilenet_v1_coco_2017_11_17.tar.gz
+    mv ssd_mobilenet_v1_coco_2017_11_17/frozen_inference_graph.pb src/scene_understanding/tf_model/frozen_inference_graph.pb
+    rm -rf ssd_mobilenet_v1_coco_2017_11_17 ssd_mobilenet_v1_coco_2017_11_17.tar.gz
+fi
+
 # For this you have youtube-dl to be installed
 # https://github.com/rg3/youtube-dl/
 
@@ -159,7 +167,7 @@ export TURTLEBOT3_MODEL=burger
 
 if [ ! -z "$RQT" ] # If input argument provided
 then
-    rqt_image_view &
+    sleep 2 && rqt_image_view &
 fi
 
 # Run our porject ROS launch
