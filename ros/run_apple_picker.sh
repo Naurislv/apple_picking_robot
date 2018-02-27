@@ -23,5 +23,8 @@ catkin_make
 # source global variables which may be needed for project
 source devel/setup.sh
 
-# run ROS project loop
+# Use burger Turtlebot model
+export TURTLEBOT3_MODEL=burger
+
+# Run our porject ROS launch
 roslaunch launch/project.launch

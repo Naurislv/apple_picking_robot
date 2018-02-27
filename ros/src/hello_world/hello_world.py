@@ -23,9 +23,10 @@ class HelloWorld(object):
             Loop function to publish waypoints for car to follow
         :return:
         """
-        rate = rospy.Rate(10) # 10Hz
+        pass
+        # rate = rospy.Rate(10) # 10Hz
 
-        i = 0
+        # i = 0
         #while not rospy.is_shutdown():
         #    i += 1
         #    rospy.loginfo('Loop iter: %d', i)

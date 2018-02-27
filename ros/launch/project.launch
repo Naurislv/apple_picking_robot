@@ -1,8 +1,5 @@
 <?xml version="1.0"?>
 <launch>
-    <include file="$(find image_processing)/launch/package.launch"/>
-    <include file="$(find hello_world)/launch/package.launch"/>
-    <include file="$(find scene_understanding)/launch/package.launch"/>
     <include file="$(find teleop_twist_keyboard)/launch/package.launch"/>
+    <include file="$(find turtlebot3_gazebo)/launch/turtlebot3_apple_dbaby_world.launch"/>
 </launch>
-

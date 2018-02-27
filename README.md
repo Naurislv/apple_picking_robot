@@ -25,6 +25,7 @@ If you experience missing package error feel free to google and install it. Usua
 2. [Intro to ROS](docs/ROS.md)
 3. How to use [Docker](docs/Docker.md) for this project.
 4. [UnrealEngine4](docs/UnrealEngine4.md)
+5. How to setup [Gazebo](docs/Gazebo.md)
 
 # The Team
 
