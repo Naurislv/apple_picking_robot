@@ -26,26 +26,27 @@ Creating autonomous robot for given size apples pitching in the controlled indoo
     * First navigate to ros directory: `cd /home/apple_picking_robot/ros`
     * Run `./run_apple_picker.sh --help` to see all possible input arguments:
 
-    ```
-    Apple Picker
+ ```
+ Apple Picker
 
-    [options] application [arguments]
+ [options] application [arguments]
 
-    options:
+ options:
 
-    -h,  --help                        show brief help
-    -rv, --rviz=bool                   if true then run ROS rviz GUI
-    -r,  --rqt=bool                    if true then run ROS rqt_image_view
-    -c,  --camera=bool                 if true then physical camera connected and no virtual env will be launched
-    -su, --scene_understanding=bool    if true then scene_understanding will be launched
-    -kb, --keyboard=bool               if true then run keyboard package for controlig Gazebo
-    -w,  --world=WORLD                 choose turtlebot world. empty | original | dbaby | None
-    -gg, --gazebo_gui=bool             if true then run gazebo GUI
-    -yt, --youtube=LINK                download youtube (LINK) video and copy it experiment directory
+ -h,  --help                        show brief help
+ -rv, --rviz=bool                   if true then run ROS rviz GUI
+ -r,  --rqt=bool                    if true then run ROS rqt_image_view
+ -c,  --camera=bool                 if true then physical camera connected and no virtual env will be launched
+ -su, --scene_understanding=bool    if true then scene_understanding will be launched
+ -kb, --keyboard=bool               if true then run keyboard package for controlig Gazebo
+ -w,  --world=WORLD                 choose turtlebot world. empty | original | dbaby | None
+ -gg, --gazebo_gui=bool             if true then run gazebo GUI
+ -yt, --youtube=LINK                download youtube (LINK) video and copy it experiment directory
 
-    Example: ./run_apple_picker.sh -r true -kb true -w dbaby
-    Example: ./run_apple_picker.sh --rqt=true --keyboard=true --world=dbaby
-    ```
+ Example: ./run_apple_picker.sh -r true -kb true -w dbaby
+ Example: ./run_apple_picker.sh --rqt=true --keyboard=true --world=dbaby
+ ```
+ 
     * Run script with arguments e.g.: `./run_apple_picker.sh -r true -kb true -w dbaby`
 
 ## Docs
