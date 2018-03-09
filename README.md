@@ -14,7 +14,13 @@ Creating autonomous robot for given size apples pitching in the controlled indoo
 ## Run
 
 1. Install Docker on your machine if you do not already have it. See more information under section [#first time run](docs/Docker.md)
-2. Run Docker image from terminal: `docker run -it -p 6080:80 naurislv/apple_picking_robot`
+2. Pull latest Docker image and run it from terminal:
+
+   ```
+   docker pull naurislv/apple_picking_robot
+   docker run -it -p 6080:80 naurislv/apple_picking_robot
+   ```
+
 3. Open browser: http://127.0.0.1:6080 and open terminal inside
 2. Running project.
     * First navigate to ros directory: `cd /home/apple_picking_robot/ros`
