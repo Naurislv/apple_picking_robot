@@ -73,4 +73,4 @@ if __name__ == '__main__':
     try:
         SceneUnderstanding()
     except rospy.ROSInterruptException:
-        rospy.logerr('Failed image processing node')
+        rospy.logerr('Failed scene understanding node')

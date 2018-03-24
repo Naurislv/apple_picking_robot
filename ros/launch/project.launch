@@ -8,6 +8,7 @@
     <arg name="world" default=""/>
     <arg name="camera" default="false"/>
     <arg name="scene_understanding" default="false"/>
+    <arg name="train" default="false"/>
 
     <!-- Launch ROS packages based on input arguments -->
 
@@ -30,5 +31,6 @@
     <!-- Camera, image processing related stuff -->
     <include file="$(find image_processing)/launch/package.launch" if="$(eval camera == true)"/>
     <include file="$(find scene_understanding)/launch/package.launch" if="$(eval scene_understanding == true)"/>
+    <include file="$(find lumii_ai)/launch/package.launch" if="$(eval train == true)"/>
 
 </launch>
