@@ -10,3 +10,6 @@ ros/.catkin_workspace
 
 # MAC OS related metadata storing file
 .DS_Store
+
+# Visual studio code settings for workspace
+.vscode/*
