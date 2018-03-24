@@ -17,6 +17,7 @@ while test $# -gt 0; do
       echo "-kb, --keyboard=bool               if true then run keyboard package for controlig Gazebo"
       echo "-w,  --world=WORLD                 choose turtlebot world. empty | original | dbaby"
       echo "-gg, --gazebo_gui=bool             if true then run gazebo GUI"
+      echo "-t,  --train=bool                  if true then run bot training node"
       echo "-yt, --youtube=LINK                download youtube (LINK) video and copy it experiment directory"
       echo " "
       echo "Example: ./run_apple_picker.sh -r true -kb true -w dbaby"
@@ -127,6 +128,19 @@ while test $# -gt 0; do
       export RQT=`echo $1 | sed -e 's/^[^=]*=//g'`
       shift
       ;;
+    -t)
+      shift
+      if test $# -gt 0; then
+        export TRAIN=$1
+      else
+        exit 1
+      fi
+      shift
+      ;;
+    --train*)
+      export RQT=`echo $1 | sed -e 's/^[^=]*=//g'`
+      shift
+      ;;
     *)
       break
       ;;
@@ -171,4 +185,4 @@ then
 fi
 
 # Run our porject ROS launch
-roslaunch launch/project.launch keyboard:=$KEYBOARD rviz:=$RVIZ world:=$WORLD gazebo_gui:=$GAZEBO_GUI camera:=$CAMERA scene_understanding:=$SCENE_UNDERSTANDING
+roslaunch launch/project.launch keyboard:=$KEYBOARD rviz:=$RVIZ world:=$WORLD gazebo_gui:=$GAZEBO_GUI camera:=$CAMERA scene_understanding:=$SCENE_UNDERSTANDING train:=$TRAIN
