@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<package>
+  <name>robot_control.py</name>
+  <version>0.1.0</version>
+  <description>Generic keyboard teleop for twist robots.</description>
+
+  <maintainer email="naurisdorbe@gmail.com">Nauris Dorbe</maintainer>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <run_depend>geometry_msgs</run_depend>
+  <run_depend>rospy</run_depend>
+</package>

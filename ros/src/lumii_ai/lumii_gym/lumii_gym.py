@@ -12,6 +12,8 @@ More about what is LUMII: http://www.lumii.lv/
 # Standard imports
 import logging
 import time
+from random import randrange
+import sys
 
 # Dependency imports
 import rospy
@@ -19,23 +21,58 @@ import rospy
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 
-class LumiiGym(object):
+sys.path.append('../../robot_control/')
+
+# Local imports
+from robot_control import RobotControl # pylint: disable=E0401,C0413
+
+class LumiiGym(RobotControl):
     """LUMII Gym API. Based on OpenAI Gym API."""
 
     def __init__(self):
 
-        self.action_space = Discrete(['up', 'down', 'left', 'right'])
+        self.action_space = Discrete(['i', 'j', 'l', ',', 'p'])
         self.observation_space = Box('/camera1/image_raw')
+
+        # Count steps, so we can know when game is Done (dont play forever)
+        self.step_counter = 0
 
     def reset(self):
         """Reset VM to beginning."""
 
+        self.env_reset()
+        self.step_counter = 0
+
         return self.observation_space.sample()
 
-    def step(self, action):
-        """Make one step in VM."""
+    def step(self, action_idx):
+        """Make one step in VM.
 
-        return self.observation_space.sample(), float(1), False, None
+        action: index of valid action space
+        """
+
+        env_binding = self.action_space.env_binding(action_idx)
+        reward = self._calc_reward(self.env_step(env_binding))
+
+        done = False
+        self.step_counter += 1
+        if self.step_counter >= 100:
+            done = True
+
+        return self.observation_space.sample(), reward, done, 0
+
+    def _calc_reward(self, step_result):
+        """Calculate single step reward."""
+        reward = 0
+
+        if step_result['tried_pickup'] and step_result['done_pickup']:
+            reward += 1000
+        elif step_result['tried_pickup']:
+            reward -= 1
+
+        reward = reward + step_result['distance_before'] - step_result['distance_after']
+
+        return float(reward)
 
 class Discrete(object):
     """Action space class."""
@@ -47,10 +84,13 @@ class Discrete(object):
 
     def sample(self):
         """Sample action space sample."""
-        return 0
+        return randrange(0, self.n)
+
+    def env_binding(self, idx):
+        """Translate action index to action for environment."""
+        return self.spaces[idx]
 
     def __repr__(self):
-
         return 'Discrete(%d)' % len(self.spaces)
 
 class Box(object):
@@ -66,10 +106,6 @@ class Box(object):
         self._bridge = CvBridge() # Convert ROS msg to numpy array
 
         rospy.Subscriber(img_ros_topic, Image, callback=self._image_callback)
-
-        # print('Spin start')
-        # rospy.spin()
-        # print('Spin end')
 
     def sample(self):
         """Sample observation space sample."""

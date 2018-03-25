@@ -13,7 +13,7 @@
     <!-- Launch ROS packages based on input arguments -->
 
     <!-- Gazebo / Turtlebot related stuff -->
-    <include file="$(find teleop_twist_keyboard)/launch/package.launch" if="$(eval keyboard == true)"/>
+    <include file="$(find robot_control)/launch/package.launch" if="$(eval keyboard == true)"/>
     <include file="$(find turtlebot3_gazebo)/launch/turtlebot3_gazebo_rviz.launch" if="$(eval rviz == true)"/>
 
     <include file="$(find turtlebot3_gazebo)/launch/turtlebot3_apple_dbaby_world.launch" if="$(eval world == 'dbaby')">
