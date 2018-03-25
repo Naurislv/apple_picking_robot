@@ -74,7 +74,7 @@ class LumiiGym(RobotControl):
 
         # reward = reward + step_result['dist_towrds_apple']
         # reward = reward + 10 * step_result['dist_traveled']
-        reward = reward + 50 * step_result['dist_traveled_from_o']
+        reward = reward + 200 * step_result['dist_traveled_from_o']
         reward -= 1
 
         return float(reward)

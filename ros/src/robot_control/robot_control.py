@@ -293,12 +293,12 @@ class RobotControl(object):
         dist_from_o_after = self.pose_distance(self.origin_coords, coords_after)
 
         if dist_from_o_after - self.best_from_o > 0:
+            dist_from_o_after_set = dist_from_o_after - self.best_from_o
             self.best_from_o = dist_from_o_after
-            dist_from_o_after -= self.best_from_o
         else:
-            dist_from_o_after = 0
+            dist_from_o_after_set = 0
 
-        step_result['dist_traveled_from_o'] = dist_from_o_after
+        step_result['dist_traveled_from_o'] = dist_from_o_after_set
 
         return step_result
 
