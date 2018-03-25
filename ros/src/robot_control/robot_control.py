@@ -1,5 +1,9 @@
 #! /usr/bin/env python
 
+"""
+API implementation for controlling Gazebo apple picking robot.
+"""
+
 # Standard imports
 import math
 import sys
@@ -13,15 +17,15 @@ import rospy
 
 from std_srvs.srv import Empty
 from geometry_msgs.msg import Twist
+from geometry_msgs.msg import Pose
 from gazebo_msgs.srv import GetModelState
 from gazebo_msgs.srv import DeleteModel
 from gazebo_msgs.srv import SetModelState
 from gazebo_msgs.msg import ModelState
-from geometry_msgs.msg import Pose
 
 roslib.load_manifest('robot_control')
 
-class Block:
+class Block(object):
     """Define block object."""
 
     def __init__(self, name, relative_entity_name):
@@ -35,10 +39,13 @@ class RobotControl(object):
         self.help() # Print Robot Control infomration
         self.turtlebot = Block('turtlebot3_burger', '')
 
+        # Minimum distance to apple, where robot can pick up
+        self.apple_distance = 0.35
+        # Distance to travel in single step
+        self.step_distance = 0.1
+
         # Robot control ROS publisher
         self.cmd_publisher = rospy.Publisher('cmd_vel', Twist, queue_size=1)
-        # Minimum distance to apple, where robot can pick up
-        self.distance_lim = 0.35
         # Settings for keyboard control (get_key)
         self.settings = termios.tcgetattr(sys.stdin)
 
@@ -101,35 +108,50 @@ class RobotControl(object):
                 elif key == 'r':
                     self.env_reset()
                 else:
-                    self.env_action(key)
+                    self.env_step(key)
 
-        except Exception as err: #pylint: disable=W0703
+        except Exception as err: # pylint: disable=W0703,I0011
             rospy.logerr(err)
 
-    def closest_apple(self):
-        """Calculate distance to closes apple."""
+    def turtlebot_coords(self):
+        """Get current turtlebot coordinates"""
 
         model_coordinates = rospy.ServiceProxy('/gazebo/get_model_state', GetModelState)
         block_name = str(self.turtlebot.name)
         turtlebot_coordinates = model_coordinates(block_name, self.turtlebot.relative_entity_name)
 
+        return turtlebot_coordinates
+
+    def pose_distance(self, pos_0, pos_1):
+        """Calculate distance from pose parameters."""
+
+        x_diff = pos_0.pose.position.x - pos_1.pose.position.x
+        y_diff = pos_0.pose.position.y - pos_1.pose.position.y
+        z_diff = pos_0.pose.position.z - pos_1.pose.position.z
+
+        distance = math.sqrt(
+            math.pow(x_diff, 2) +
+            math.pow(y_diff, 2) +
+            math.pow(z_diff, 2)
+        )
+
+        return distance
+
+    def closest_apple(self):
+        """Calculate distance to closes apple."""
+
         distance_list = []
         distance_min = 10
+
+        model_coordinates = rospy.ServiceProxy('/gazebo/get_model_state', GetModelState)
+        turtlebot_coordinates = self.turtlebot_coords()
 
         for i in range(0, 9):
             apple = Block('cricket_ball_' + str(i), 'link')
             block_name = str(apple.name)
             apple_coordinates = model_coordinates(block_name, apple.relative_entity_name)
 
-            x_diff = turtlebot_coordinates.pose.position.x - apple_coordinates.pose.position.x
-            y_diff = turtlebot_coordinates.pose.position.y - apple_coordinates.pose.position.y
-            z_diff = turtlebot_coordinates.pose.position.z - apple_coordinates.pose.position.z
-            distance = math.sqrt(
-                math.pow(x_diff, 2) +
-                math.pow(y_diff, 2) +
-                math.pow(z_diff, 2)
-            )
-
+            distance = self.pose_distance(turtlebot_coordinates, apple_coordinates)
             distance_list.append(distance)
 
         distance_min = min(distance_list)
@@ -143,10 +165,10 @@ class RobotControl(object):
         is_apple_picked = False # idicate wether picked apple or not
         try:
             distance_min, number_min = self.closest_apple()
-            rospy.loginfo("Trying to pick up apple - distance %.2f, "
-                          "minimum to succeed %.2f", distance_min, self.distance_lim)
+            rospy.logdebug("Trying to pick up apple - distance %.2f, "
+                           "minimum to succeed %.2f", distance_min, self.apple_distance)
 
-            if distance_min <= self.distance_lim:
+            if distance_min <= self.apple_distance:
                 # delete_model = rospy.ServiceProxy('/gazebo/delete_model', DeleteModel)
                 rospy.ServiceProxy('/gazebo/set_model_state', SetModelState)
 
@@ -156,7 +178,7 @@ class RobotControl(object):
                 model_state.model_name = apple_name
 
                 twist = Twist()
-                twist = self._reset_twist(twist)
+                twist = self._set_twist(twist)
                 model_state.twist = twist
 
                 pose = Pose()
@@ -176,9 +198,10 @@ class RobotControl(object):
 
                 is_apple_picked = True
             else:
-                rospy.loginfo('Come closer to the apple. Min distance is %.2f', self.distance_lim)
+                rospy.logdebug('Come closer to the apple. Min distance is %.2f',
+                               self.apple_distance)
         except rospy.ServiceException as err:
-            rospy.loginfo("Get Model State service call failed:  {0}".format(err))
+            rospy.logerr("Get Model State service call failed: %s", err)
 
         return is_apple_picked
 
@@ -194,7 +217,7 @@ class RobotControl(object):
 
     def env_step(self, action):
         """Make a step in world"""
-        rospy.loginfo("Envstep runnning: '%s'", action)
+        rospy.logdebug("Envstep runnning: '%s'", action)
 
         l_x = 0
         theta = 0
@@ -203,22 +226,50 @@ class RobotControl(object):
         step_result['done_pickup'] = False
 
         distance_before, _ = self.closest_apple()
-        step_result['distance_before'] = distance_before
+        coords_before = self.turtlebot_coords()
 
         if action in self.move_bindings.keys():
-            l_x = self.move_bindings[action][0]
+
+            l_x = self.move_bindings[action][0] # analog to speed
             theta = self.move_bindings[action][3]
+
+            twist = Twist()
+            twist = self._set_twist(twist, l_x=l_x, a_z=theta)
+
+            x_distance = 0
+            angular_distance = 0
+
+            # Setting the current time for distance calculus
+            start_time = rospy.Time.now().to_sec()
+
+            # Loop to move the turtle in an specified distance
+            while x_distance < self.step_distance and angular_distance < self.step_distance:
+                # Publish the velocity
+                self.cmd_publisher.publish(twist)
+                # Takes actual time to velocity calculus
+                end_time = rospy.Time.now().to_sec()
+
+                # Calculates distancePoseStamped
+                x_distance = abs(l_x) * (end_time - start_time)
+                angular_distance = abs(theta) * (end_time - start_time)
+
+            # After the loop reset twist values
+            twist = self._set_twist(twist)
+
+            # Force the robot to stop
+            self.cmd_publisher.publish(twist)
+
         elif action == 'p':
             is_apple_picked = self.try_to_pick_up_apple()
 
             step_result['tried_pickup'] = True
             step_result['done_pickup'] = is_apple_picked
 
-        twist = Twist()
-        twist = twist = self._reset_twist(twist, l_x=l_x, a_z=theta)
+        distance_after, _ = self.closest_apple()
+        coords_after = self.turtlebot_coords()
 
-        self.cmd_publisher.publish(twist)
-        step_result['distance_after'] = self.closest_apple()
+        step_result['distance_towrds_apple'] = distance_before - distance_after
+        step_result['distance_traveled'] = self.pose_distance(coords_before, coords_after)
 
         return step_result
 
@@ -253,7 +304,7 @@ class RobotControl(object):
         """
         rospy.loginfo(msg)
 
-    def _reset_twist(self, twist, l_x=0, l_y=0, l_z=0, a_x=0, a_y=0, a_z=0):
+    def _set_twist(self, twist, l_x=0, l_y=0, l_z=0, a_x=0, a_y=0, a_z=0):
         """Reset twist values."""
 
         twist.linear.x = l_x
@@ -266,6 +317,7 @@ class RobotControl(object):
         return twist
 
 if __name__ == '__main__':
+    rospy.loginfo('Starting robot control node')
     rospy.init_node('robot_control')
 
     ROBO_CONTROL = RobotControl()

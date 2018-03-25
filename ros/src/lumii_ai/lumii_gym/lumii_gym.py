@@ -21,7 +21,7 @@ import rospy
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 
-sys.path.append('../../robot_control/')
+sys.path.append('../robot_control/')
 
 # Local imports
 from robot_control import RobotControl # pylint: disable=E0401,C0413
@@ -31,7 +31,9 @@ class LumiiGym(RobotControl):
 
     def __init__(self):
 
-        self.action_space = Discrete(['i', 'j', 'l', ',', 'p'])
+        RobotControl.__init__(self) # Initialize RobotControl
+
+        self.action_space = Discrete(['i', 'j', 'l', 'p'])
         self.observation_space = Box('/camera1/image_raw')
 
         # Count steps, so we can know when game is Done (dont play forever)
@@ -56,7 +58,7 @@ class LumiiGym(RobotControl):
 
         done = False
         self.step_counter += 1
-        if self.step_counter >= 100:
+        if self.step_counter >= 250:
             done = True
 
         return self.observation_space.sample(), reward, done, 0
@@ -70,7 +72,9 @@ class LumiiGym(RobotControl):
         elif step_result['tried_pickup']:
             reward -= 1
 
-        reward = reward + step_result['distance_before'] - step_result['distance_after']
+        # reward = reward + step_result['distance_before'] - step_result['distance_after']
+        # reward = reward + 10 * step_result['distance_traveled']
+        reward -= 1
 
         return float(reward)
 

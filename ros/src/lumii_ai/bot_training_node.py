@@ -13,6 +13,7 @@ Insipred from :
 # Standard imports
 import time
 import os
+import sys
 
 # Dependency imports
 import rospy
@@ -21,9 +22,11 @@ import imageio
 import tensorflow as tf
 import numpy as np
 
+sys.path.append('../../robot_control/')
+
 # Local imports
-import lumii_gym as gym
-from policy_gradient import Policy
+import lumii_gym as gym # pylint: disable=E0401,C0413
+from policy_gradient import Policy # pylint: disable=E0401,C0413
 
 # Create tensorflow flags for input arguments
 _FLAGS = tf.app.flags
@@ -35,6 +38,7 @@ _FLAGS.DEFINE_boolean('video_big', False, "Whether to record and save video or n
 _FLAGS.DEFINE_boolean('gpu', False, "Use GPU.")
 _FLAGS.DEFINE_string('name', '',
                      'Name of run, will be used to save and load checkpoint and statistic files.')
+_FLAGS.DEFINE_string('nb_episodes', 100, 'number of episodes to run')
 
 class GymEnv(object):
     """OpenAI Gym Virtual Environment - setup."""
@@ -115,18 +119,18 @@ class GymEnv(object):
         except EnvironmentError:
             rospy.logwarn("Statistics Not Found: %s", statistics_file)
 
-        try:
-            self._run()
-        except KeyboardInterrupt:  # Stop learning by CTRL + C and save filess
-            self.policy.save(chk_file)
+        self._run()
 
-            epr = np.concatenate((statistics[0], np.array(self.episdod_reward)), axis=0)
-            nfr = np.concatenate((statistics[1], np.array(self.no_frames)), axis=0)
+        # Save results
+        self.policy.save(chk_file)
 
-            statistics = np.array([epr, nfr])
+        epr = np.concatenate((statistics[0], np.array(self.episdod_reward)), axis=0)
+        nfr = np.concatenate((statistics[1], np.array(self.no_frames)), axis=0)
 
-            np.save(statistics_file, statistics)
-            rospy.loginfo("Statistics saved %s %s", statistics_file, statistics.shape)
+        statistics = np.array([epr, nfr])
+
+        np.save(statistics_file, statistics)
+        rospy.loginfo("Statistics saved %s %s", statistics_file, statistics.shape)
 
 
     def _run(self):
@@ -150,7 +154,7 @@ class GymEnv(object):
         start_time = time.time()
         train_time = start_time
 
-        while True:
+        while episode_number <= FLAGS.nb_episodes:
 
             # preprocess the observation, set input to network to be difference image
             policy_input, prev_img = self.prepro(observation, prev_img)
@@ -170,10 +174,10 @@ class GymEnv(object):
             # for previous action)
             reward_his.append(reward)
 
-            if n_frames % 5 == 0:
+            if n_frames % 50 == 0:
                 end_time = time.time()
 
-                fps = 5 / (end_time - start_time)
+                fps = 50 / (end_time - start_time)
                 rospy.loginfo("%s.[%s]. T[%.2fs] FPS: %.2f, Reward Sum: %s",
                               episode_number, self.no_ep_load, end_time - train_time,
                               fps, reward_sum)
@@ -187,7 +191,7 @@ class GymEnv(object):
             if done:  # When Game env say it's done - end of episode.
                 rospy.loginfo('')
                 rospy.loginfo("Episode done! Reward sum: %.2f , Frames: %d",
-                            reward_sum, n_frames)
+                              reward_sum, n_frames)
                 rospy.loginfo('')
 
                 if episode_number % batch_size == 0:
@@ -197,7 +201,7 @@ class GymEnv(object):
                         action_space[act] += 1
 
                     rospy.loginfo("Update weights from %d frames with average score: %s",
-                                len(reward_his), sum(reward_his) / batch_size)
+                                  len(reward_his), sum(reward_his) / batch_size)
                     rospy.loginfo("Used action space: %s", action_space)
 
                     # compute the discounted reward backwards through time
@@ -259,9 +263,10 @@ class GymEnv(object):
 
         prev_img = img
 
+        # import cv2
         # print(policy_input.shape, prev_img.shape)
-        # save_im('save_im/{}.jpg'.format(str(int(round(time.time() * 1000)))),
-        #         np.concatenate((prev_img, policy_input), axis=1))
+        # cv2.imwrite('save_im/{}.png'.format(str(int(round(time.time() * 1000)))),
+        #             np.concatenate((prev_img, policy_input), axis=1))
         # policy_input = np.expand_dims(policy_input, -1)
 
         return policy_input, prev_img
