@@ -174,10 +174,10 @@ class GymEnv(object):
             # for previous action)
             reward_his.append(reward)
 
-            if n_frames % 1 == 0:
+            if n_frames % 50 == 0:
                 end_time = time.time()
 
-                fps = 1 / (end_time - start_time)
+                fps = 50 / (end_time - start_time)
                 rospy.loginfo("%s.[%s]. T[%.2fs] FPS: %.2f, Reward Sum: %s (%.1f)",
                               episode_number, self.no_ep_load, end_time - train_time,
                               fps, reward_sum, reward)
