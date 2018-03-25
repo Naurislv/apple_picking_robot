@@ -72,8 +72,9 @@ class LumiiGym(RobotControl):
         elif step_result['tried_pickup']:
             reward -= 1
 
-        # reward = reward + step_result['distance_before'] - step_result['distance_after']
-        # reward = reward + 10 * step_result['distance_traveled']
+        # reward = reward + step_result['dist_towrds_apple']
+        # reward = reward + 10 * step_result['dist_traveled']
+        reward = reward + 50 * step_result['dist_traveled_from_o']
         reward -= 1
 
         return float(reward)
@@ -116,7 +117,7 @@ class Box(object):
 
         # Dont return image until it's not received rom subscriber
         while self.nb_im_sent == self.nb_im_received:
-            time.sleep(0.001)
+            time.sleep(0.0001)
 
         self.nb_im_sent = self.nb_im_received
 

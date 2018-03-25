@@ -10,6 +10,7 @@ import sys
 import select
 import termios
 import tty
+import time
 
 # Dependency imports
 import roslib
@@ -43,6 +44,12 @@ class RobotControl(object):
         self.apple_distance = 0.35
         # Distance to travel in single step
         self.step_distance = 0.1
+
+        self.deleted_apples = []
+
+        # So we know where robot spaw and measure distance it traveled from there
+        self.origin_coords = None
+        self.best_from_o = 0
 
         # Robot control ROS publisher
         self.cmd_publisher = rospy.Publisher('cmd_vel', Twist, queue_size=1)
@@ -82,6 +89,9 @@ class RobotControl(object):
         self.pickup_bindings = {
             'p': (1)
         }
+
+        # Wait for environment to setup
+        time.sleep(2)
 
     def get_key(self):
         """Get pressed key from keyboard using sys package."""
@@ -147,12 +157,14 @@ class RobotControl(object):
         turtlebot_coordinates = self.turtlebot_coords()
 
         for i in range(0, 9):
-            apple = Block('cricket_ball_' + str(i), 'link')
-            block_name = str(apple.name)
-            apple_coordinates = model_coordinates(block_name, apple.relative_entity_name)
 
-            distance = self.pose_distance(turtlebot_coordinates, apple_coordinates)
-            distance_list.append(distance)
+            if i not in self.deleted_apples:
+                apple = Block('cricket_ball_' + str(i), 'link')
+                block_name = str(apple.name)
+                apple_coordinates = model_coordinates(block_name, apple.relative_entity_name)
+
+                distance = self.pose_distance(turtlebot_coordinates, apple_coordinates)
+                distance_list.append(distance)
 
         distance_min = min(distance_list)
         number_min = distance_list.index(min(distance_list))
@@ -169,8 +181,11 @@ class RobotControl(object):
                            "minimum to succeed %.2f", distance_min, self.apple_distance)
 
             if distance_min <= self.apple_distance:
-                # delete_model = rospy.ServiceProxy('/gazebo/delete_model', DeleteModel)
-                rospy.ServiceProxy('/gazebo/set_model_state', SetModelState)
+                 # ROS service for removing apple from world
+                delete_model = rospy.ServiceProxy('/gazebo/delete_model', DeleteModel)
+                # new_model_state = rospy.ServiceProxy('/gazebo/set_model_state', SetModelState)
+
+                self.deleted_apples.append(number_min)
 
                 model_state = ModelState()
                 apple_name = 'cricket_ball_' + str(number_min)
@@ -193,8 +208,8 @@ class RobotControl(object):
                 model_state.pose = pose
                 model_state.reference_frame = 'world'
 
-                # delete_apple = delete_model(apple_name)
-                # new_apple_state = new_model_state(model_state)
+                delete_model(apple_name) # Remove apple from world
+                # new_model_state(model_state)
 
                 is_apple_picked = True
             else:
@@ -214,6 +229,10 @@ class RobotControl(object):
         reset_world = rospy.ServiceProxy('/gazebo/reset_world', Empty)
         reset_world()
         rospy.loginfo('World reset')
+
+        self.origin_coords = self.turtlebot_coords()
+        self.best_from_o = 0
+        self.deleted_apples = []
 
     def env_step(self, action):
         """Make a step in world"""
@@ -268,8 +287,18 @@ class RobotControl(object):
         distance_after, _ = self.closest_apple()
         coords_after = self.turtlebot_coords()
 
-        step_result['distance_towrds_apple'] = distance_before - distance_after
-        step_result['distance_traveled'] = self.pose_distance(coords_before, coords_after)
+        step_result['dist_towrds_apple'] = distance_before - distance_after
+        step_result['dist_traveled'] = self.pose_distance(coords_before, coords_after)
+
+        dist_from_o_after = self.pose_distance(self.origin_coords, coords_after)
+
+        if dist_from_o_after - self.best_from_o > 0:
+            self.best_from_o = dist_from_o_after
+            dist_from_o_after -= self.best_from_o
+        else:
+            dist_from_o_after = 0
+
+        step_result['dist_traveled_from_o'] = dist_from_o_after
 
         return step_result
 
@@ -321,4 +350,5 @@ if __name__ == '__main__':
     rospy.init_node('robot_control')
 
     ROBO_CONTROL = RobotControl()
+    ROBO_CONTROL.env_reset()
     ROBO_CONTROL.keyboard_loop()
