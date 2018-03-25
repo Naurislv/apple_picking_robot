@@ -178,9 +178,9 @@ class GymEnv(object):
                 end_time = time.time()
 
                 fps = 50 / (end_time - start_time)
-                rospy.loginfo("%s.[%s]. T[%.2fs] FPS: %.2f, Reward Sum: %s",
+                rospy.loginfo("%s.[%s]. T[%.2fs] FPS: %.2f, Reward Sum: %s (%.1f)",
                               episode_number, self.no_ep_load, end_time - train_time,
-                              fps, reward_sum)
+                              fps, reward_sum, reward)
                 start_time = time.time()
 
             if FLAGS.video_small:
