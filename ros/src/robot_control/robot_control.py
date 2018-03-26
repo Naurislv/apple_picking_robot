@@ -41,9 +41,10 @@ class RobotControl(object):
         self.turtlebot = Block('turtlebot3_burger', '')
 
         # Minimum distance to apple, where robot can pick up
-        self.apple_distance = 0.35
+        self.apple_distance = 0.25
         # Distance to travel in single step
-        self.step_distance = 0.1
+        self.x_distance = 0.2
+        self.a_distance = 0.15
 
         self.deleted_apples = []
 
@@ -52,7 +53,7 @@ class RobotControl(object):
         self.best_from_o = 0
 
         # Robot control ROS publisher
-        self.cmd_publisher = rospy.Publisher('cmd_vel', Twist, queue_size=1)
+        self.cmd_publisher = rospy.Publisher('cmd_vel', Twist, queue_size=0)
         # Settings for keyboard control (get_key)
         self.settings = termios.tcgetattr(sys.stdin)
 
@@ -165,6 +166,8 @@ class RobotControl(object):
 
                 distance = self.pose_distance(turtlebot_coordinates, apple_coordinates)
                 distance_list.append(distance)
+            else:
+                distance_list.append(99999999)
 
         distance_min = min(distance_list)
         number_min = distance_list.index(min(distance_list))
@@ -181,11 +184,9 @@ class RobotControl(object):
                            "minimum to succeed %.2f", distance_min, self.apple_distance)
 
             if distance_min <= self.apple_distance:
-                 # ROS service for removing apple from world
-                delete_model = rospy.ServiceProxy('/gazebo/delete_model', DeleteModel)
+                # ROS service for removing apple from world
+                # delete_model = rospy.ServiceProxy('/gazebo/delete_model', DeleteModel)
                 # new_model_state = rospy.ServiceProxy('/gazebo/set_model_state', SetModelState)
-
-                self.deleted_apples.append(number_min)
 
                 model_state = ModelState()
                 apple_name = 'cricket_ball_' + str(number_min)
@@ -208,9 +209,10 @@ class RobotControl(object):
                 model_state.pose = pose
                 model_state.reference_frame = 'world'
 
-                delete_model(apple_name) # Remove apple from world
-                # new_model_state(model_state)
+                # delete_model(apple_name) # Remove apple from world
+                # new_model_state(apple_name)
 
+                self.deleted_apples.append(number_min)
                 is_apple_picked = True
             else:
                 rospy.logdebug('Come closer to the apple. Min distance is %.2f',
@@ -262,7 +264,7 @@ class RobotControl(object):
             start_time = rospy.Time.now().to_sec()
 
             # Loop to move the turtle in an specified distance
-            while x_distance < self.step_distance and angular_distance < self.step_distance:
+            while x_distance < self.x_distance and angular_distance < self.a_distance:
                 # Publish the velocity
                 self.cmd_publisher.publish(twist)
                 # Takes actual time to velocity calculus
@@ -274,9 +276,12 @@ class RobotControl(object):
 
             # After the loop reset twist values
             twist = self._set_twist(twist)
-
             # Force the robot to stop
             self.cmd_publisher.publish(twist)
+
+            # TODO: Something is wrong with Gazebo VE, currently dont see another solution.
+            # So we just wait until cmd_publisher has published!
+            # time.sleep(0.125)
 
         elif action == 'p':
             is_apple_picked = self.try_to_pick_up_apple()
