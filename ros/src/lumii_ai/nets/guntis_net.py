@@ -69,19 +69,3 @@ def build(input_shape, dtype, classes):
     ret['logits_softmax'] = tf.nn.softmax(logits)
 
     return ret
-
-def _tf_selu(input_tensor):
-    """Tensorflow implementation of SELU.
-
-    Self Normalizing Exponential linear unit
-
-    https://arxiv.org/abs/1706.02515
-
-    https://github.com/fchollet/keras/blob/master/keras/backend/tensorflow_backend.py
-    """
-    alpha = 1.6732632423543772848170429916717
-    scale = 1.050700987355480493419334985294
-
-    res = tf.nn.elu(input_tensor)
-
-    return scale * tf.where(input_tensor > 0, res, alpha * res)
