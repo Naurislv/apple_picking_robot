@@ -11,9 +11,9 @@ import logging
 import tensorflow as tf
 import numpy as np
 # from MaxoutNet import maxout_cnn as policy_net
-# from Nets import MaxoutNet as policy_net
+# from nets import maxout_net as policy_net
 from nets import guntis_net as policy_net
-# from Nets import KarpathyNet as policy_net
+# from nets import karpathy_net as policy_net
 
 TF_CONFIG = tf.ConfigProto()
 TF_CONFIG.allow_soft_placement = True
@@ -33,7 +33,7 @@ class Policy(object):
 
         """
         self.rmsprop_decay = 0.99
-        self.learning_rate = 1e-4
+        self.learning_rate = 1e-3
         self.state_shape = state_shape
 
         self._sess = tf.Session(config=TF_CONFIG)
