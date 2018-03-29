@@ -36,9 +36,9 @@ _FLAGS.DEFINE_boolean('video_small', False, "Whether to record and save video or
 _FLAGS.DEFINE_boolean('video_big', False, "Whether to record and save video or not. Gym built "
                                           "in command. Also create report .json files. Boolean.")
 _FLAGS.DEFINE_boolean('gpu', False, "Use GPU.")
-_FLAGS.DEFINE_string('name', '',
+_FLAGS.DEFINE_string('name', '1522011213815',
                      'Name of run, will be used to save and load checkpoint and statistic files.')
-_FLAGS.DEFINE_string('nb_episodes', 100, 'number of episodes to run')
+_FLAGS.DEFINE_string('nb_episodes', 200, 'number of episodes to run')
 
 class GymEnv(object):
     """OpenAI Gym Virtual Environment - setup."""
@@ -174,10 +174,10 @@ class GymEnv(object):
             # for previous action)
             reward_his.append(reward)
 
-            if n_frames % 50 == 0:
+            if n_frames % 20 == 0:
                 end_time = time.time()
 
-                fps = 50 / (end_time - start_time)
+                fps = 20 / (end_time - start_time)
                 rospy.loginfo("%s.[%s]. T[%.2fs] FPS: %.2f, Reward Sum: %s (%.1f)",
                               episode_number, self.no_ep_load, end_time - train_time,
                               fps, reward_sum, reward)
@@ -240,7 +240,7 @@ class GymEnv(object):
 
         # downsample by factor of 2 ##choose colour 2 to improve visibility in most games
         # img = img[::2, ::2, 2]
-        img = img[::2, ::2]  # Downsample but keep all channels
+        img = img[::4, ::4]  # Downsample but keep all channels
 
         # img[img == 17] = 0 # erase background (background type 1)
         # img[img == 192] = 0 # erase background (background type 2)
