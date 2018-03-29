@@ -37,13 +37,15 @@ class LumiiGym(RobotControl):
         self.observation_space = Box('/camera1/image_raw')
 
         # Count steps, so we can know when game is Done (dont play forever)
-        self.step_counter = 0
+        self.step_counter = 200
+        self.coords_history = None
 
     def reset(self):
         """Reset VM to beginning."""
 
         self.env_reset()
-        self.step_counter = 0
+        self.step_counter = 200
+        self.coords_history = []
 
         return self.observation_space.sample()
 
@@ -54,30 +56,45 @@ class LumiiGym(RobotControl):
         """
 
         env_binding = self.action_space.env_binding(action_idx)
-        reward = self._calc_reward(self.env_step(env_binding))
 
-        done = False
-        self.step_counter += 1
-        if self.step_counter >= 250:
-            done = True
+        step_feedback = self.env_step(env_binding)
+        reward, done = self._calc_reward(step_feedback)
 
         return self.observation_space.sample(), reward, done, 0
 
-    def _calc_reward(self, step_result):
+    def _calc_reward(self, step_feedback):
         """Calculate single step reward."""
-        reward = 0
 
-        if step_result['tried_pickup'] and step_result['done_pickup']:
+        reward = 0
+        done = False
+        dist = None
+
+        self.step_counter -= 1
+        if self.step_counter <= 0:
+            done = True
+
+        self.coords_history.append(step_feedback['coords_after'])
+
+        if len(self.coords_history) > 15:
+            dist = self.pose_distance(self.coords_history[0], step_feedback['coords_after'])
+
+            if dist < 0.05:
+                reward -= (1000 + self.step_counter)
+                done = True
+
+            self.coords_history.pop(0)
+
+        if step_feedback['tried_pickup'] and step_feedback['done_pickup']:
             reward += 1000
-        elif step_result['tried_pickup']:
+        elif step_feedback['tried_pickup']:
             reward -= 1
 
-        # reward = reward + step_result['dist_towrds_apple']
-        # reward = reward + 10 * step_result['dist_traveled']
-        reward = reward + 200 * step_result['dist_traveled_from_o']
-        reward -= 1
+        # reward = reward + 10 * step_feedback['dist_towrds_apple']
+        # reward = reward + 10 * step_feedback['dist_traveled']
+        # reward = reward + 200 * step_feedback['dist_traveled_from_o']
+        reward += 1
 
-        return float(reward)
+        return float(reward), done
 
 class Discrete(object):
     """Action space class."""
