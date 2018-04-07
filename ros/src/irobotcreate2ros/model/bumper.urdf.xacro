@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="bumper">
+  
+    <xacro:property name="pi" value="3.1415926535897931"/>
+
+        
+    <xacro:macro name="bumper_sensor" params="xyz rpy">
+            
+                
+        <gazebo reference="base_link">
+            <sensor name="irobot_bumper_sensor" type="contact">
+                <always_on>true</always_on>
+                <update_rate>100.0</update_rate>
+                <contact>
+                  <collision>base_link_collision</collision>
+                </contact>
+                <plugin name="base_link_gazebo_ros_bumper_controller" filename="libgazebo_ros_bumper.so">
+                       <alwaysOn>true</alwaysOn>
+                       <updateRate>100.0</updateRate>
+                       <bumperTopicName>irobot_bumper</bumperTopicName>
+                       <frameName>base_link</frameName>
+                </plugin>
+            </sensor>
+        </gazebo>
+    
+    </xacro:macro>
+    
+</robot>

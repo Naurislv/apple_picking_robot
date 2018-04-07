@@ -38,13 +38,13 @@ class RobotControl(object):
 
     def __init__(self):
         self.help() # Print Robot Control infomration
-        self.turtlebot = Block('turtlebot3_burger', '')
+        self.turtlebot = Block('iRobot', '')
 
         # Minimum distance to apple, where robot can pick up
         self.apple_distance = 0.35
         # Distance to travel in single step
-        self.x_distance = 0.2
-        self.a_distance = 0.25
+        self.x_distance = 0.25
+        self.a_distance = 0.3
 
         # Robot control ROS publisher
         self.cmd_publisher = rospy.Publisher('cmd_vel', Twist, queue_size=1)
