@@ -43,7 +43,7 @@ class RobotControl(object):
         # Minimum distance to apple, where robot can pick up
         self.apple_distance = 0.3
         # Distance to travel in single step
-        self.x_distance = 0.25
+        self.x_distance = 0.2
         self.a_distance = 0.3
 
         # Robot control ROS publisher
@@ -218,9 +218,12 @@ class RobotControl(object):
 
     def env_reset(self):
         """Restart world."""
+
         twist = Twist()
-        for _ in range(0, 3):
-            self.cmd_publisher.publish(twist)
+        self.cmd_publisher.publish(twist)
+
+        # TODO: Perhaps will improve spawning issue when some command didn't complete.
+        rospy.sleep(0.5)
 
         rospy.wait_for_service('/gazebo/reset_world')
         reset_world = rospy.ServiceProxy('/gazebo/reset_world', Empty)
@@ -238,6 +241,11 @@ class RobotControl(object):
         step_result = {}
         step_result['tried_pickup'] = False
         step_result['done_pickup'] = False
+
+        # Used when we don't want the RL algo to control robot but we control
+        # with keyboard instead. We'd like to see training process anyway.
+        if action is None:
+            return step_result
 
         distance_before, _ = self.closest_apple()
         coords_before = self.turtlebot_coords()
@@ -275,9 +283,7 @@ class RobotControl(object):
             # After the loop reset twist values
             twist = self._set_twist(twist)
 
-            for _ in range(0, 3):
-                # Force the robot to stop
-                self.cmd_publisher.publish(twist)
+            self.cmd_publisher.publish(twist)
 
             # TODO: Something is wrong with Gazebo VE, currently dont see another solution.
             # So we just wait until cmd_publisher has published!

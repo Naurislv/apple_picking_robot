@@ -18,6 +18,7 @@ import sys
 # Dependency imports
 import rospy
 
+from gazebo_msgs.msg import ContactsState
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 
@@ -36,16 +37,21 @@ class LumiiGym(RobotControl):
         self.action_space = Discrete(['i', 'j', 'l', 'p'])
         self.observation_space = Box('iRobot/camera/image_raw')
 
+        rospy.Subscriber('/irobot_bumper', ContactsState, callback=self._bumper_callback)
+
         # Count steps, so we can know when game is Done (dont play forever)
-        self.step_counter = 160
-        self.coords_history = None
+        self.nb_steps = 160
+        self.is_bumper_triggered = False
+
+        # Step counter
+        self._step_counter = self.nb_steps
 
     def reset(self):
         """Reset VM to beginning."""
 
         self.env_reset()
-        self.step_counter = 140
-        self.coords_history = []
+        self.step_counter = self.nb_steps
+        self.is_bumper_triggered = False
 
         return self.observation_space.sample()
 
@@ -62,28 +68,34 @@ class LumiiGym(RobotControl):
 
         return self.observation_space.sample(), reward, done, 0
 
+    def _bumper_callback(self, msg):
+        """Callback for bumper sensor."""
+
+        if len(msg.states) > 2:
+            states = []
+            for state in msg.states:
+                states.append(state.collision1_name)
+
+            if 'cricket_ball_1::link::collision' not in states:
+                self.is_bumper_triggered = True
+
     def _calc_reward(self, step_feedback):
         """Calculate single step reward."""
 
+        done_reason = None
         reward = 0
         done = False
-        dist = None
 
         self.step_counter -= 1
         if self.step_counter <= 0:
-            reward += 1000
+            done_reason = 'step_count'
             done = True
-
-        self.coords_history.append(step_feedback['coords_after'])
-
-        if len(self.coords_history) > 5:
-            dist = self.pose_distance(self.coords_history[0], step_feedback['coords_after'])
-
-            if dist < 0.04:
-                reward -= (500 + self.step_counter)
-                done = True
-
-            self.coords_history.pop(0)
+        elif self.is_bumper_triggered and self.nb_steps - self.step_counter > 2:
+            done_reason = 'bumper_triggered'
+            done = True
+            reward -= 300 + self.step_counter
+        else:
+            self.is_bumper_triggered = False
 
         if step_feedback['tried_pickup'] and step_feedback['done_pickup']:
             reward += 1000
@@ -93,7 +105,10 @@ class LumiiGym(RobotControl):
         # reward = reward + 10 * step_feedback['dist_towrds_apple']
         # reward = reward + 10 * step_feedback['dist_traveled']
         # reward = reward + 200 * step_feedback['dist_traveled_from_o']
-        reward += 1
+        reward -= 1
+
+        if done:
+            rospy.logwarn('Environment is done. Reason: %s', done_reason)
 
         return float(reward), done
 
