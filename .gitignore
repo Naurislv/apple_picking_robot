@@ -13,3 +13,6 @@ ros/.catkin_workspace
 
 # Visual studio code settings for workspace
 .vscode/*
+
+# Ignore rosinstall
+.rosinstall

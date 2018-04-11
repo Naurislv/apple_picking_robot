@@ -14,17 +14,17 @@
 
     <!-- Gazebo / Turtlebot related stuff -->
     <include file="$(find robot_control)/launch/package.launch" if="$(eval keyboard == true)"/>
-    <include file="$(find turtlebot3_gazebo)/launch/turtlebot3_gazebo_rviz.launch" if="$(eval rviz == true)"/>
+    <include file="$(find irobotcreate2)/launch/irobot_gazebo_rviz.launch" if="$(eval rviz == true)"/>
 
-    <include file="$(find turtlebot3_gazebo)/launch/turtlebot3_apple_dbaby_world.launch" if="$(eval world == 'dbaby')">
+    <include file="$(find irobotcreate2)/launch/irobot_apple_dbaby_world.launch" if="$(eval world == 'dbaby')">
         <arg name="gazebo_gui" value="$(arg gazebo_gui)"/>
     </include>
 
-    <include file="$(find turtlebot3_gazebo)/launch/turtlebot3_empty_world.launch" if="$(eval world == 'empty')">
+    <include file="$(find irobotcreate2)/launch/irobot_empty_world.launch" if="$(eval world == 'empty')">
         <arg name="gazebo_gui" value="$(arg gazebo_gui)"/>
     </include>
     
-    <include file="$(find turtlebot3_gazebo)/launch/turtlebot3_world.launch" if="$(eval world == 'original')">
+    <include file="$(find irobotcreate2)/launch/irobot_world.launch" if="$(eval world == 'original')">
         <arg name="gazebo_gui" value="$(arg gazebo_gui)"/>
     </include>
 

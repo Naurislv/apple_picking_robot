@@ -1,0 +1,13 @@
+<launch>
+  <arg name="model" default="$(env iRobot_model)" doc="model type [iRobot]"/>
+
+  <include file="$(find irobotcreate2)/include/description.launch.xml">
+    <arg name="model" value="$(arg model)" />
+  </include>
+
+  <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
+    <param name="publish_frequency" type="double" value="50.0" />
+  </node>
+
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find irobotcreate2)/rviz/irobot_gazebo_model.rviz"/>
+</launch>

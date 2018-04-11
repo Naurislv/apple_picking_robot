@@ -177,7 +177,7 @@ catkin_make
 source devel/setup.sh
 
 # Use burger Turtlebot model
-export TURTLEBOT3_MODEL=burger
+export iRobot_model="iRobot"
 
 if [ ! -z "$RQT" ] # If input argument provided
 then

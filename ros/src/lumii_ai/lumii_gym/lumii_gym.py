@@ -34,7 +34,7 @@ class LumiiGym(RobotControl):
         RobotControl.__init__(self) # Initialize RobotControl
 
         self.action_space = Discrete(['i', 'j', 'l', 'p'])
-        self.observation_space = Box('/camera1/image_raw')
+        self.observation_space = Box('iRobot/camera/image_raw')
 
         # Count steps, so we can know when game is Done (dont play forever)
         self.step_counter = 160
