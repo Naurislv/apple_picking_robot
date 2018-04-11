@@ -8,12 +8,15 @@ Policy Gradient in TF:
 import logging
 
 # Other imports
+import rospy
+
 import tensorflow as tf
 import numpy as np
 # from MaxoutNet import maxout_cnn as policy_net
 # from nets import maxout_net as policy_net
-from nets import guntis_net as policy_net
+# from nets import drive_net as policy_net
 # from nets import karpathy_net as policy_net
+from nets import small_conv_net as policy_net
 
 TF_CONFIG = tf.ConfigProto()
 TF_CONFIG.allow_soft_placement = True
@@ -40,7 +43,7 @@ class Policy(object):
 
         self.net = None
         self.actions = None
-        self.advantages = None
+        self.disc_reward = None
         self.sample = None
         self.loss = None
         self.train = None
@@ -52,31 +55,64 @@ class Policy(object):
         """Define network graph in a scope for Policy Gradient."""
 
         with tf.variable_scope(scope):  # pylint: disable=E1129
-            logging.info('Building Network in %s scope', scope)
+            rospy.loginfo('Building Network in %s scope', scope)
 
             self.net = policy_net.build(self.state_shape, self.data_type['tf'], self.n_actions)
 
-            self.actions = tf.placeholder(dtype=self.data_type['tf'], shape=[None, self.n_actions])
-            self.advantages = tf.placeholder(dtype=self.data_type['tf'], shape=[None, 1])
+            self.actions = tf.placeholder(dtype=tf.int32, shape=[None,], name='actions')
+            self.disc_reward = tf.placeholder(dtype=self.data_type['tf'], shape=[None,], name='d_r')
+
+            # Initialize Session
+            sess = tf.Session()
+            init = tf.global_variables_initializer()
+            sess.run(init)
 
             # Samples an action from multinomial distribution
-            self.sample = tf.transpose(tf.multinomial(self.net['logits'], 1))
+            # We need to use logits_softmax here istead of just logits because
+            # all values equal and below will be zero and never will be sampled which
+            # is not true for softmax
+            self.sample = tf.multinomial(self.net['logits'], 1)
+
+            # Define Losses
+            pg_loss = tf.reduce_mean(
+                (self.disc_reward - self.net['value']) *
+                tf.nn.sparse_softmax_cross_entropy_with_logits(
+                    logits=self.net['logits'], labels=self.actions))
+
+            value_scale = 0.5
+            value_loss = value_scale * tf.reduce_mean(
+                tf.square(self.disc_reward - self.net['value']))
+
+            entropy_scale = 0.00
+            entropy_loss = -entropy_scale * tf.reduce_sum(
+                self.net['logits_softmax'] * tf.exp(self.net['logits_softmax']))
+            self.loss = pg_loss + value_loss - entropy_loss
 
             # surrogate loss
-            self.loss = - tf.reduce_sum(self.advantages *  # pylint: disable=E1130
-                                        self.actions *
-                                        tf.log(self.net['logits_softmax'] + 0.0001))
+            # self.loss = - tf.reduce_sum(self.disc_reward *  # pylint: disable=E1130
+            #                             self.actions *
+            #                             tf.log(self.net['logits_softmax'] + 0.00001))
+
+            # Add Optimizer
+            alpha = 1e-4
+            gradient_clip = 40
+
+            optimizer = tf.train.AdamOptimizer(alpha)
+            grads = tf.gradients(self.loss, tf.trainable_variables())
+            grads, _ = tf.clip_by_global_norm(grads, gradient_clip) # gradient clipping
+            grads_and_vars = list(zip(grads, tf.trainable_variables()))
+            self.train = optimizer.apply_gradients(grads_and_vars)
 
             # update
-            optimizer = tf.train.RMSPropOptimizer(
-                learning_rate=self.learning_rate,
-                decay=self.rmsprop_decay
-            )
+            # optimizer = tf.train.RMSPropOptimizer(
+            #     learning_rate=self.learning_rate,
+            #     decay=self.rmsprop_decay
+            # )
 
             # Discussions - how to reduce memory consumpsion in TF:
             # https://groups.google.com/a/tensorflow.org/forum/#!topic/discuss/q9bT3Ql2bYk
             # https://stackoverflow.com/questions/36194394/how-i-reduce-memory-consumption-in-a-loop-in-tensorflow
-            self.train = optimizer.minimize(self.loss)
+            # self.train = optimizer.minimize(self.loss)
 
     def init_weights(self):
         """Initialize TF variables."""
@@ -86,23 +122,23 @@ class Policy(object):
         init_op = tf.global_variables_initializer()
         self._sess.run(init_op)
 
-    def fit(self, obs, actions, advantages):
+    def fit(self, obs, actions, disc_reward):
         """Train neural network."""
 
         batch_feed = {self.net['inputs']: obs,
                       self.actions: actions,
-                      self.advantages: advantages}
+                      self.disc_reward: disc_reward}
 
         _, loss = self._sess.run([self.train, self.loss], feed_dict=batch_feed)
-        logging.info("Loss sum: %s", loss)
+        rospy.loginfo("Loss sum: %s", loss)
 
     def sample_action(self, observation):
         """Predict action from observation.
 
         Return index of action.
         """
-
         observation = np.expand_dims(observation, axis=0)
+
         return self._sess.run(self.sample, feed_dict={self.net['inputs']: observation})
 
     def save(self, path):
@@ -110,11 +146,11 @@ class Policy(object):
         saver = tf.train.Saver()
 
         saver.save(self._sess, path)
-        logging.info('Checkpoint saved %s', path)
+        rospy.loginfo('Checkpoint saved %s', path)
 
     def load(self, path):
         """Save Tesnroflow checkpoint."""
         saver = tf.train.Saver()
 
         saver.restore(self._sess, path)
-        logging.info('Variables loaded from checkpoint file: %s', path)
+        rospy.loginfo('Variables loaded from checkpoint file: %s', path)

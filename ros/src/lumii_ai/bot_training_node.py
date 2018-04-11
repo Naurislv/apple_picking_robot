@@ -21,6 +21,7 @@ import rospy
 import imageio
 import tensorflow as tf
 import numpy as np
+import cv2
 
 sys.path.append('../../robot_control/')
 
@@ -38,7 +39,7 @@ _FLAGS.DEFINE_boolean('video_big', False, "Whether to record and save video or n
 _FLAGS.DEFINE_boolean('gpu', False, "Use GPU.")
 _FLAGS.DEFINE_string('name', '1522011213815',
                      'Name of run, will be used to save and load checkpoint and statistic files.')
-_FLAGS.DEFINE_string('nb_episodes', 200, 'number of episodes to run')
+_FLAGS.DEFINE_string('nb_episodes', 300, 'number of episodes to run')
 
 class GymEnv(object):
     """OpenAI Gym Virtual Environment - setup."""
@@ -69,7 +70,8 @@ class GymEnv(object):
             rospy.loginfo('AS sample: %s', self.env.action_space.sample())
 
         # Observation sapce shape after preprocessing
-        os_sample_shape = self.prepro(self.env.observation_space.sample(), None)[0].shape
+        # os_sample_shape = self.prepro(self.env.observation_space.sample(), None)[0].shape
+        os_sample_shape = self.prepro(self.env.observation_space.sample()).shape
         rospy.loginfo("Observation sample shape after preprocess: %s", os_sample_shape)
 
         if FLAGS.gpu:
@@ -142,7 +144,7 @@ class GymEnv(object):
         prev_img = None  # Previous image
 
         reward_sum = 0
-        batch_size = 8
+        batch_size = 4
 
         # Used for training after episode
         reward_his = []  # save rewards
@@ -157,19 +159,20 @@ class GymEnv(object):
         while episode_number <= FLAGS.nb_episodes:
 
             # preprocess the observation, set input to network to be difference image
-            policy_input, prev_img = self.prepro(observation, prev_img)
+            # policy_input, prev_img = self.prepro(observation, prev_img)
+            policy_input = self.prepro(observation)
 
             action = self.policy.sample_action(policy_input)[0][0]
 
-            label = np.zeros((self.n_actions), dtype=self.data_type['np'])
-            label[action] = 1
+            # label = np.zeros((self.n_actions), dtype=self.data_type['np'])
+            # label[action] = 1
 
             # step the environment and get new measurements
             observation, reward, done, _ = self.env.step(action)
             reward_sum += reward
 
             obs_his.append(policy_input)
-            action_his.append(label)
+            action_his.append(action)
             # record reward (has to be done after we call step() to get reward
             # for previous action)
             reward_his.append(reward)
@@ -195,9 +198,10 @@ class GymEnv(object):
                 rospy.loginfo('')
 
                 if episode_number % batch_size == 0:
-                    action_counter = [np.where(aprob == 1)[0][0] for aprob in action_his]
+                    # action_counter = [np.where(aprob == 1)[0][0] for aprob in action_his]
                     action_space = {i: 0 for i in range(self.n_actions)}
-                    for act in action_counter:
+                    # for act in action_counter:
+                    for act in action_his:
                         action_space[act] += 1
 
                     rospy.loginfo("Update weights from %d frames with average score: %s",
@@ -206,16 +210,8 @@ class GymEnv(object):
 
                     # compute the discounted reward backwards through time
                     reward_his = self.discount_rewards(np.array(reward_his))
-                    # standardize the rewards to be unit normal
-                    # (helps control the gradient estimator variance)
-                    reward_his -= np.mean(reward_his)
-                    tmp = np.std(reward_his)
-                    if tmp > 0:
-                        reward_his /= tmp  # fix zero-divide
 
-                    self.policy.fit(np.array(obs_his),
-                                    np.vstack(action_his),
-                                    np.vstack(reward_his))
+                    self.policy.fit(np.array(obs_his), np.stack(action_his), np.stack(reward_his))
 
                     # Reset history
                     reward_his = []  # save rewards
@@ -233,45 +229,35 @@ class GymEnv(object):
                 episode_number += 1
                 start_time = time.time()
 
-    def prepro(self, img, prev_img):
-        """ prepro 210x160x3 uint8 frame into 6400 (80x80) 1D float vector """
+    # def prepro(self, img, prev_img):
+    def prepro(self, img):
+        """ prepro 77x102x3 uint8 frame into 6400 (80x80) 1D float vector """
         # Resize image using interpolation
-        # img = cv2.resize(img, None, fx=0.5, fy=0.5, interpolation=cv2.INTER_AREA)
-
-        # downsample by factor of 2 ##choose colour 2 to improve visibility in most games
-        # img = img[::2, ::2, 2]
-        img = img[::4, ::4]  # Downsample but keep all channels
-
-        # img[img == 17] = 0 # erase background (background type 1)
-        # img[img == 192] = 0 # erase background (background type 2)
-        # img[img == 136] = 0 # erase background (background type 3)
-        # img[img != 0] = 1 # everything else (paddles, ball) just set to 1
-
-        # img = img[17:96, :]
-
-        img.astype(self.data_type['np'])
+        img = cv2.resize(img, None, fx=0.16, fy=0.16, interpolation=cv2.INTER_AREA)
+        img = img.astype(self.data_type['np'])
+        # Standardize image so it would be in range -0.5 .. 0.5
+        img = (img - 127.5) / 255
 
         # Insert motion in frame by subtracting previous frame from current
-        if prev_img is not None:
+        # if prev_img is not None:
             # absdiff does not give different colors if differences
             # so neural network can't distinguish betwwen previous and current frame
             # policy_input = cv2.absdiff(img, prev_img)
 
-            policy_input = img - prev_img
-        else:
-            policy_input = np.zeros_like(img)
+        #     policy_input = img - prev_img
+        # else:
+        #     policy_input = np.zeros_like(img)
 
-        prev_img = img
+        # prev_img = img
 
-        # import cv2
         # print(policy_input.shape, prev_img.shape)
         # cv2.imwrite('save_im/{}.png'.format(str(int(round(time.time() * 1000)))),
-        #             np.concatenate((prev_img, policy_input), axis=1))
-        # policy_input = np.expand_dims(policy_input, -1)
+        #             np.concatenate((prev_img, policy_input), axis=1) * 255 + 127.5)
 
-        return policy_input, prev_img
+        # return policy_input, prev_img
+        return img
 
-    def discount_rewards(self, reward_his, gamma=.99):
+    def discount_rewards(self, reward_his, gamma=.99, normal=True):
         """Returns discounted rewards
         Args:
             reward_his (1-D array): a list of `reward` at each time step
@@ -286,15 +272,22 @@ class GymEnv(object):
         """
 
         discounted_r = np.zeros_like(reward_his)
-        running_add = 0
+        running_add = 0.0
 
-        for i in reversed(range(0, reward_his.size)):
+        for i in reversed(range(0, len(reward_his))):
 
             # reset the sum, since this was a game boundary (pong specific!)
-            if reward_his[i] != 0:
-                running_add = 0
+            # if reward_his[i] != 0:
+            #     running_add = 0
+
             running_add = running_add * gamma + reward_his[i]
             discounted_r[i] = running_add
+
+        # Normalize
+        if normal:
+            mean = np.mean(discounted_r)
+            std = np.std(discounted_r) + 0.00000001
+            discounted_r = (discounted_r - mean) / (std)
 
         return discounted_r
 
