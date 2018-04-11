@@ -41,10 +41,10 @@ class RobotControl(object):
         self.turtlebot = Block('turtlebot3_burger', '')
 
         # Minimum distance to apple, where robot can pick up
-        self.apple_distance = 0.35
+        self.apple_distance = 0.3
         # Distance to travel in single step
-        self.x_distance = 0.2
-        self.a_distance = 0.25
+        self.x_distance = 0.4
+        self.a_distance = 0.4
 
         # Robot control ROS publisher
         self.cmd_publisher = rospy.Publisher('cmd_vel', Twist, queue_size=1)
@@ -281,7 +281,7 @@ class RobotControl(object):
 
             # TODO: Something is wrong with Gazebo VE, currently dont see another solution.
             # So we just wait until cmd_publisher has published!
-            time.sleep(0.075)
+            # time.sleep(0.075)
 
         elif action == 'p':
             is_apple_picked = self.try_to_pick_up_apple()
