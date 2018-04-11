@@ -37,14 +37,14 @@ class LumiiGym(RobotControl):
         self.observation_space = Box('/camera1/image_raw')
 
         # Count steps, so we can know when game is Done (dont play forever)
-        self.step_counter = 200
+        self.step_counter = 160
         self.coords_history = None
 
     def reset(self):
         """Reset VM to beginning."""
 
         self.env_reset()
-        self.step_counter = 200
+        self.step_counter = 140
         self.coords_history = []
 
         return self.observation_space.sample()
@@ -71,15 +71,16 @@ class LumiiGym(RobotControl):
 
         self.step_counter -= 1
         if self.step_counter <= 0:
+            reward += 1000
             done = True
 
         self.coords_history.append(step_feedback['coords_after'])
 
-        if len(self.coords_history) > 15:
+        if len(self.coords_history) > 5:
             dist = self.pose_distance(self.coords_history[0], step_feedback['coords_after'])
 
-            if dist < 0.05:
-                reward -= (1000 + self.step_counter)
+            if dist < 0.04:
+                reward -= (500 + self.step_counter)
                 done = True
 
             self.coords_history.pop(0)
