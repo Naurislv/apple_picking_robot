@@ -39,8 +39,8 @@ _FLAGS.DEFINE_boolean('video_big', False, "Whether to record and save video or n
 _FLAGS.DEFINE_boolean('gpu', False, "Use GPU.")
 _FLAGS.DEFINE_string('name', 'test_0',
                      'Name of run, will be used to save and load checkpoint and statistic files.')
-_FLAGS.DEFINE_integer('nb_episodes', 10000, 'number of episodes to run')
-_FLAGS.DEFINE_integer('checkpoint_steps', 200, 'After how many episodes to save checkpoint')
+_FLAGS.DEFINE_integer('nb_episodes', 100000000, 'number of episodes to run')
+_FLAGS.DEFINE_integer('checkpoint_steps', 300, 'After how many episodes to save checkpoint')
 _FLAGS.DEFINE_integer('batch_size', 2, 'After how many episodes to save checkpoint')
 
 class GymEnv(object):
