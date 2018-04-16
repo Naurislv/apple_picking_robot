@@ -146,11 +146,11 @@ class Policy(object):
         saver = tf.train.Saver()
 
         saver.save(self._sess, path)
-        rospy.loginfo('Checkpoint saved %s', path)
+        rospy.logwarn('Checkpoint saved %s', path)
 
     def load(self, path):
         """Save Tesnroflow checkpoint."""
         saver = tf.train.Saver()
 
         saver.restore(self._sess, path)
-        rospy.loginfo('Variables loaded from checkpoint file: %s', path)
+        rospy.logwarn('Variables loaded from checkpoint file: %s', path)

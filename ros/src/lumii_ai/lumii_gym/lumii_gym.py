@@ -40,8 +40,9 @@ class LumiiGym(RobotControl):
         rospy.Subscriber('/irobot_bumper', ContactsState, callback=self._bumper_callback)
 
         # Count steps, so we can know when game is Done (dont play forever)
-        self.nb_steps = 160
+        self.nb_steps = 300
         self.is_bumper_triggered = False
+        self.step_counter = self.nb_steps
 
         # Step counter
         self._step_counter = self.nb_steps
@@ -64,6 +65,8 @@ class LumiiGym(RobotControl):
         env_binding = self.action_space.env_binding(action_idx)
 
         step_feedback = self.env_step(env_binding)
+        # step_feedback = self.env_step(None)
+        # time.sleep(0.5)
         reward, done = self._calc_reward(step_feedback)
 
         return self.observation_space.sample(), reward, done, 0
@@ -76,7 +79,8 @@ class LumiiGym(RobotControl):
             for state in msg.states:
                 states.append(state.collision1_name)
 
-            if 'cricket_ball_1::link::collision' not in states:
+            # 'cricket_ball_1::link::collision'
+            if not any("cricket_ball" in state for state in states):
                 self.is_bumper_triggered = True
 
     def _calc_reward(self, step_feedback):
@@ -93,19 +97,16 @@ class LumiiGym(RobotControl):
         elif self.is_bumper_triggered and self.nb_steps - self.step_counter > 2:
             done_reason = 'bumper_triggered'
             done = True
-            reward -= 300 + self.step_counter
         else:
             self.is_bumper_triggered = False
 
         if step_feedback['tried_pickup'] and step_feedback['done_pickup']:
-            reward += 1000
-        elif step_feedback['tried_pickup']:
-            reward -= 1
+            reward += 10
 
-        # reward = reward + 10 * step_feedback['dist_towrds_apple']
+        # reward += step_feedback['dist_towrds_apple']
         # reward = reward + 10 * step_feedback['dist_traveled']
         # reward = reward + 200 * step_feedback['dist_traveled_from_o']
-        reward -= 1
+        # reward -= 1
 
         if done:
             rospy.logwarn('Environment is done. Reason: %s', done_reason)
@@ -150,7 +151,7 @@ class Box(object):
 
         # Dont return image until it's not received rom subscriber
         while self.nb_im_sent == self.nb_im_received:
-            time.sleep(0.0001)
+            time.sleep(0.001)
 
         self.nb_im_sent = self.nb_im_received
 

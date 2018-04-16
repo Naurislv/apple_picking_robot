@@ -37,9 +37,11 @@ _FLAGS.DEFINE_boolean('video_small', False, "Whether to record and save video or
 _FLAGS.DEFINE_boolean('video_big', False, "Whether to record and save video or not. Gym built "
                                           "in command. Also create report .json files. Boolean.")
 _FLAGS.DEFINE_boolean('gpu', False, "Use GPU.")
-_FLAGS.DEFINE_string('name', '1522011213815',
+_FLAGS.DEFINE_string('name', 'test_0',
                      'Name of run, will be used to save and load checkpoint and statistic files.')
-_FLAGS.DEFINE_string('nb_episodes', 300, 'number of episodes to run')
+_FLAGS.DEFINE_integer('nb_episodes', 10000, 'number of episodes to run')
+_FLAGS.DEFINE_integer('checkpoint_steps', 200, 'After how many episodes to save checkpoint')
+_FLAGS.DEFINE_integer('batch_size', 2, 'After how many episodes to save checkpoint')
 
 class GymEnv(object):
     """OpenAI Gym Virtual Environment - setup."""
@@ -102,9 +104,8 @@ class GymEnv(object):
             rospy.loginfo('Creating outputs/' + run_name)
             os.makedirs('outputs/' + run_name)
 
-        chk_file = 'outputs/' + run_name + '/model'
+        chk_file = 'outputs/' + run_name + '/models'
         statistics_file = 'outputs/' + run_name + '/statistics.npy'
-        statistics = np.array([np.array([]), np.array([])])
 
         # Try to load tensorflow model
         try:
@@ -113,121 +114,14 @@ class GymEnv(object):
             rospy.logwarn("Checkpoint Not Found: %s", chk_file)
             self.policy.init_weights()
 
-        # Try to load statistics
-        try:
+        try: # Try to load statistics
             statistics = np.load(statistics_file)
             self.no_ep_load = len(statistics[0])
-            # rospy.loginfo("Statistics loaded %s", statistics.shape)
+            rospy.loginfo("Statistics loaded %s", statistics.shape) # pylint: disable=E1101
         except EnvironmentError:
             rospy.logwarn("Statistics Not Found: %s", statistics_file)
 
-        self._run()
-
-        # Save results
-        self.policy.save(chk_file)
-
-        epr = np.concatenate((statistics[0], np.array(self.episdod_reward)), axis=0)
-        nfr = np.concatenate((statistics[1], np.array(self.no_frames)), axis=0)
-
-        statistics = np.array([epr, nfr])
-
-        np.save(statistics_file, statistics)
-        rospy.loginfo("Statistics saved %s %s", statistics_file, statistics.shape)
-
-
-    def _run(self):
-        """Run virtual environment loop."""
-
-        # 1 episode is multiple games (until game env responde with done == True)
-        episode_number = 1
-        n_frames = 1  # frames per episode
-        prev_img = None  # Previous image
-
-        reward_sum = 0
-        batch_size = 4
-
-        # Used for training after episode
-        reward_his = []  # save rewards
-        action_his = []  # action history
-        obs_his = []  # save eposiodes
-
-        observation = self.env.reset()
-
-        start_time = time.time()
-        train_time = start_time
-
-        while episode_number <= FLAGS.nb_episodes:
-
-            # preprocess the observation, set input to network to be difference image
-            # policy_input, prev_img = self.prepro(observation, prev_img)
-            policy_input = self.prepro(observation)
-
-            action = self.policy.sample_action(policy_input)[0][0]
-
-            # label = np.zeros((self.n_actions), dtype=self.data_type['np'])
-            # label[action] = 1
-
-            # step the environment and get new measurements
-            observation, reward, done, _ = self.env.step(action)
-            reward_sum += reward
-
-            obs_his.append(policy_input)
-            action_his.append(action)
-            # record reward (has to be done after we call step() to get reward
-            # for previous action)
-            reward_his.append(reward)
-
-            if n_frames % 20 == 0:
-                end_time = time.time()
-
-                fps = 20 / (end_time - start_time)
-                rospy.loginfo("%s.[%s]. T[%.2fs] FPS: %.2f, Reward Sum: %s (%.1f)",
-                              episode_number, self.no_ep_load, end_time - train_time,
-                              fps, reward_sum, reward)
-                start_time = time.time()
-
-            if FLAGS.video_small:
-                self.writer.append_data(observation)
-
-            n_frames += 1
-
-            if done:  # When Game env say it's done - end of episode.
-                rospy.loginfo('')
-                rospy.loginfo("Episode done! Reward sum: %.2f , Frames: %d",
-                              reward_sum, n_frames)
-                rospy.loginfo('')
-
-                if episode_number % batch_size == 0:
-                    # action_counter = [np.where(aprob == 1)[0][0] for aprob in action_his]
-                    action_space = {i: 0 for i in range(self.n_actions)}
-                    # for act in action_counter:
-                    for act in action_his:
-                        action_space[act] += 1
-
-                    rospy.loginfo("Update weights from %d frames with average score: %s",
-                                  len(reward_his), sum(reward_his) / batch_size)
-                    rospy.loginfo("Used action space: %s", action_space)
-
-                    # compute the discounted reward backwards through time
-                    reward_his = self.discount_rewards(np.array(reward_his))
-
-                    self.policy.fit(np.array(obs_his), np.stack(action_his), np.stack(reward_his))
-
-                    # Reset history
-                    reward_his = []  # save rewards
-                    action_his = []  # action history
-                    obs_his = []  # save eposiodes
-
-                # Just for plotting
-                self.episdod_reward.append(reward_sum)
-                self.no_frames.append(n_frames)
-
-                observation = self.env.reset()  # reset env
-                reward_sum = 0
-                n_frames = 1
-                prev_img = None
-                episode_number += 1
-                start_time = time.time()
+        self._run(chk_file, statistics_file)
 
     # def prepro(self, img, prev_img):
     def prepro(self, img):
@@ -289,7 +183,123 @@ class GymEnv(object):
             std = np.std(discounted_r) + 0.00000001
             discounted_r = (discounted_r - mean) / (std)
 
+        print(discounted_r)
+
         return discounted_r
+
+    def _save_checkpoint(self, chk_file, statistics_file):
+        """Save model and statistics checkpoint."""
+
+        statistics = np.array([np.array([]), np.array([])])
+
+        # Save results
+        dir_path = os.path.join(chk_file, str(time.time()).replace('.', ''))
+        os.makedirs(dir_path)
+        self.policy.save(dir_path + '/model')
+
+        epr = np.concatenate((statistics[0], np.array(self.episdod_reward)), axis=0)
+        nfr = np.concatenate((statistics[1], np.array(self.no_frames)), axis=0)
+
+        statistics = np.array([epr, nfr])
+
+        np.save(statistics_file, statistics)
+        rospy.logwarn("Statistics saved %s %s", statistics_file, statistics.shape)
+
+    def _run(self, chk_file, statistics_file):
+        """Run virtual environment loop."""
+
+        # 1 episode is multiple games (until game env responde with done == True)
+        episode_number = 1
+        n_frames = 1  # frames per episode
+        prev_img = None  # Previous image
+
+        reward_sum = 0
+
+        # Used for training after episode
+        reward_his = []  # save rewards
+        action_his = []  # action history
+        obs_his = []  # save eposiodes
+
+        observation = self.env.reset()
+
+        start_time = time.time()
+        train_time = start_time
+
+        while episode_number <= FLAGS.nb_episodes:
+
+            # preprocess the observation, set input to network to be difference image
+            # policy_input, prev_img = self.prepro(observation, prev_img)
+            policy_input = self.prepro(observation)
+
+            action = self.policy.sample_action(policy_input)[0][0]
+
+            # label = np.zeros((self.n_actions), dtype=self.data_type['np'])
+            # label[action] = 1
+
+            # step the environment and get new measurements
+            observation, reward, done, _ = self.env.step(action)
+            reward_sum += reward
+
+            obs_his.append(policy_input)
+            action_his.append(action)
+            # record reward (has to be done after we call step() to get reward
+            # for previous action)
+            reward_his.append(reward)
+
+            if n_frames % 20 == 0:
+                end_time = time.time()
+
+                fps = 20 / (end_time - start_time)
+                rospy.loginfo("%s.[%s]. T[%.2fs] FPS: %.2f, Reward Sum: %s (%.1f)",
+                              episode_number, self.no_ep_load, end_time - train_time,
+                              fps, reward_sum, reward)
+                start_time = time.time()
+
+            if FLAGS.video_small:
+                self.writer.append_data(observation)
+
+            n_frames += 1
+
+            if done:  # When Game env say it's done - end of episode.
+                rospy.loginfo('')
+                rospy.loginfo("Episode done! Reward sum: %.2f , Frames: %d",
+                              reward_sum, n_frames)
+                rospy.loginfo('')
+
+                if episode_number % FLAGS.batch_size == 0:
+                    # action_counter = [np.where(aprob == 1)[0][0] for aprob in action_his]
+                    action_space = {i: 0 for i in range(self.n_actions)}
+                    # for act in action_counter:
+                    for act in action_his:
+                        action_space[act] += 1
+
+                    rospy.loginfo("Update weights from %d frames with average score: %s",
+                                  len(reward_his), sum(reward_his) / FLAGS.batch_size)
+                    rospy.loginfo("Used action space: %s", action_space)
+
+                    # compute the discounted reward backwards through time
+                    reward_his = self.discount_rewards(np.array(reward_his))
+
+                    self.policy.fit(np.array(obs_his), np.stack(action_his), np.stack(reward_his))
+
+                    # Reset history
+                    reward_his = []  # save rewards
+                    action_his = []  # action history
+                    obs_his = []  # save eposiodes
+
+                # Just for plotting
+                self.episdod_reward.append(reward_sum)
+                self.no_frames.append(n_frames)
+
+                if episode_number % FLAGS.checkpoint_steps == 0:
+                    self._save_checkpoint(chk_file, statistics_file)
+
+                observation = self.env.reset()  # reset env
+                reward_sum = 0
+                n_frames = 1
+                prev_img = None
+                episode_number += 1
+                start_time = time.time()
 
 
 if __name__ == '__main__':

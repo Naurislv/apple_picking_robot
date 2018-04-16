@@ -16,3 +16,6 @@ ros/.catkin_workspace
 
 # Ignore rosinstall
 .rosinstall
+
+# Ignore some temporary test scripts
+_test*.py

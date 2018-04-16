@@ -44,10 +44,10 @@ class RobotControl(object):
         self.apple_distance = 0.3
         # Distance to travel in single step
         self.x_distance = 0.2
-        self.a_distance = 0.3
+        self.a_distance = 0.25
 
         # Robot control ROS publisher
-        self.cmd_publisher = rospy.Publisher('cmd_vel', Twist, queue_size=1)
+        self.cmd_publisher = rospy.Publisher('cmd_vel', Twist, queue_size=5)
         # Settings for keyboard control (get_key)
         self.settings = termios.tcgetattr(sys.stdin)
 
@@ -223,7 +223,7 @@ class RobotControl(object):
         self.cmd_publisher.publish(twist)
 
         # TODO: Perhaps will improve spawning issue when some command didn't complete.
-        rospy.sleep(0.5)
+        rospy.sleep(1)
 
         rospy.wait_for_service('/gazebo/reset_world')
         reset_world = rospy.ServiceProxy('/gazebo/reset_world', Empty)
@@ -257,33 +257,40 @@ class RobotControl(object):
 
             twist = Twist()
             twist = self._set_twist(twist, l_x=l_x, a_z=theta)
+            self.cmd_publisher.publish(twist)
+            rospy.sleep(0.2)
 
-            x_distance = 0
-            angular_distance = 0
-            l_x_abs = abs(l_x)
-            theta_abs = abs(theta)
+            twist = self._set_twist(twist)
+            self.cmd_publisher.publish(twist)
 
-            if l_x_abs > 0 or theta_abs > 0:
-                # Setting the current time for distance calculus
-                start_time = rospy.Time.now().to_sec()
+            # x_distance = 0
+            # angular_distance = 0
+            # l_x_abs = abs(l_x)
+            # theta_abs = abs(theta)
 
-                # Loop to move the turtle in an specified distance
-                while x_distance < self.x_distance and angular_distance < self.a_distance:
-                    # Publish the velocity
-                    self.cmd_publisher.publish(twist)
-                    # Takes actual time to velocity calculus
-                    end_time = rospy.Time.now().to_sec()
+            # if l_x_abs > 0 or theta_abs > 0:
+            #     # Setting the current time for distance calculus
+            #     start_time = rospy.Time.now().to_sec()
 
-                    time_delta = end_time - start_time
+            #     publish_rate = rospy.Rate(30)
+            #     # Loop to move the turtle in an specified distance
+            #     while x_distance < self.x_distance and angular_distance < self.a_distance:
+            #         # Publish the velocity
+            #         self.cmd_publisher.publish(twist)
+            #         # Takes actual time to velocity calculus
+            #         end_time = rospy.Time.now().to_sec()
 
-                    # Calculates distancePoseStamped
-                    x_distance = l_x_abs * time_delta
-                    angular_distance = theta_abs * time_delta
+            #         time_delta = end_time - start_time
+
+            #         # Calculates distancePoseStamped
+            #         x_distance = l_x_abs * time_delta
+            #         angular_distance = theta_abs * time_delta
+
+            #         publish_rate.sleep()
 
             # After the loop reset twist values
-            twist = self._set_twist(twist)
-
-            self.cmd_publisher.publish(twist)
+            # twist = self._set_twist(twist)
+            # self.cmd_publisher.publish(twist)
 
             # TODO: Something is wrong with Gazebo VE, currently dont see another solution.
             # So we just wait until cmd_publisher has published!
