@@ -97,6 +97,7 @@ class LumiiGym(RobotControl):
         elif self.is_bumper_triggered and self.nb_steps - self.step_counter > 2:
             done_reason = 'bumper_triggered'
             done = True
+            reward -= 1
         else:
             self.is_bumper_triggered = False
 
@@ -105,7 +106,7 @@ class LumiiGym(RobotControl):
 
         # reward += step_feedback['dist_towrds_apple']
         # reward = reward + 10 * step_feedback['dist_traveled']
-        reward += step_feedback['dist_traveled_from_o']
+        # reward += step_feedback['dist_traveled_from_o']
 
         if done:
             rospy.logwarn('Environment is done. Reason: %s', done_reason)
