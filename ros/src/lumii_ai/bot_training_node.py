@@ -170,7 +170,7 @@ class GymEnv(object):
         assert isinstance(reward_his, np.ndarray), 'reward_his must be numpy ndarry type'
 
         none_idx = list(np.argwhere(reward_his == None).flatten()) # pylint: disable=C0121
-        discounted_r = np.zeros_like(np.delete(reward_his, none_idx, None))
+        discounted_r = []
         running_add = 0.0
 
         for i in reversed(range(0, len(reward_his))):
@@ -181,8 +181,9 @@ class GymEnv(object):
                 continue
 
             running_add = running_add * gamma + reward_his[i]
-            discounted_r[i] = running_add
+            discounted_r.append(running_add)
 
+        discounted_r = np.array(discounted_r, dtype=reward_his.dtype)
         # Normalize
         if normal:
             mean = np.mean(discounted_r)
@@ -282,7 +283,8 @@ class GymEnv(object):
                         action_space[act] += 1
 
                     rospy.loginfo("Update weights from %d frames with average score: %s",
-                                  len(reward_his), reward_his[reward_his != None].sum() / FLAGS.batch_size)
+                                  len(reward_his),
+                                  reward_his[reward_his != None].sum() / FLAGS.batch_size)
                     rospy.loginfo("Used action space: %s", action_space)
 
                     # compute the discounted reward backwards through time
