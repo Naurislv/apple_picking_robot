@@ -273,6 +273,8 @@ class GymEnv(object):
                 rospy.loginfo('')
 
                 if episode_number % FLAGS.batch_size == 0:
+                    reward_his = np.array(reward_his) # Convert list to numpy array
+
                     # action_counter = [np.where(aprob == 1)[0][0] for aprob in action_his]
                     action_space = {i: 0 for i in range(self.n_actions)}
                     # for act in action_counter:
@@ -280,11 +282,11 @@ class GymEnv(object):
                         action_space[act] += 1
 
                     rospy.loginfo("Update weights from %d frames with average score: %s",
-                                  len(reward_his), sum(reward_his) / FLAGS.batch_size)
+                                  len(reward_his), reward_his[reward_his != None].sum() / FLAGS.batch_size)
                     rospy.loginfo("Used action space: %s", action_space)
 
                     # compute the discounted reward backwards through time
-                    reward_his = self.discount_rewards(np.array(reward_his))
+                    reward_his = self.discount_rewards(reward_his)
                     self.policy.fit(np.array(obs_his), np.stack(action_his), np.stack(reward_his))
 
                     # Reset history
