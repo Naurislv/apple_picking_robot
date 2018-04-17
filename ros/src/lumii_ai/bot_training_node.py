@@ -41,7 +41,7 @@ _FLAGS.DEFINE_string('name', 'test_0',
                      'Name of run, will be used to save and load checkpoint and statistic files.')
 _FLAGS.DEFINE_integer('nb_episodes', 100000000, 'number of episodes to run')
 _FLAGS.DEFINE_integer('checkpoint_steps', 300, 'After how many episodes to save checkpoint')
-_FLAGS.DEFINE_integer('batch_size', 2, 'After how many episodes to save checkpoint')
+_FLAGS.DEFINE_integer('batch_size', 4, 'After how many episodes to save checkpoint')
 
 class GymEnv(object):
     """OpenAI Gym Virtual Environment - setup."""
@@ -170,9 +170,10 @@ class GymEnv(object):
 
         for i in reversed(range(0, len(reward_his))):
 
-            # reset the sum, since this was a game boundary (pong specific!)
-            # if reward_his[i] != 0:
-            #     running_add = 0
+            # reset the sum, since this was a game boundary
+            if reward_his[i] is None:
+                running_add = 0
+                continue
 
             running_add = running_add * gamma + reward_his[i]
             discounted_r[i] = running_add
@@ -279,7 +280,6 @@ class GymEnv(object):
 
                     # compute the discounted reward backwards through time
                     reward_his = self.discount_rewards(np.array(reward_his))
-
                     self.policy.fit(np.array(obs_his), np.stack(action_his), np.stack(reward_his))
 
                     # Reset history
@@ -299,6 +299,8 @@ class GymEnv(object):
                 n_frames = 1
                 prev_img = None
                 episode_number += 1
+                reward_his.append(None) # None will indicate that environment have is done
+
                 start_time = time.time()
 
 
