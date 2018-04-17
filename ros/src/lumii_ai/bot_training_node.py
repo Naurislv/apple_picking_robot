@@ -155,7 +155,9 @@ class GymEnv(object):
         """Returns discounted rewards
         Args:
             reward_his (1-D array): a list of `reward` at each time step
-            gamma (float): Will discount the future value by this rate
+            gamma (float): Will discount the future value by this rate.
+            You can place None value in reward_hist it will be considered as
+            environment reset and discounted reward will be adjusted acordingly.
         Returns:
             discounted_r (1-D array): same shape as input `R`
                 but the values are discounted
@@ -165,7 +167,10 @@ class GymEnv(object):
             [1 + 0.99 + 0.99**2, 1 + 0.99, 1]
         """
 
-        discounted_r = np.zeros_like(reward_his)
+        assert isinstance(reward_his, np.ndarray), 'reward_his must be numpy ndarry type'
+
+        none_idx = list(np.argwhere(reward_his == None).flatten()) # pylint: disable=C0121
+        discounted_r = np.zeros_like(np.delete(reward_his, none_idx, None))
         running_add = 0.0
 
         for i in reversed(range(0, len(reward_his))):
