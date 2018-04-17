@@ -105,8 +105,7 @@ class LumiiGym(RobotControl):
 
         # reward += step_feedback['dist_towrds_apple']
         # reward = reward + 10 * step_feedback['dist_traveled']
-        # reward = reward + 200 * step_feedback['dist_traveled_from_o']
-        # reward -= 1
+        reward += step_feedback['dist_traveled_from_o']
 
         if done:
             rospy.logwarn('Environment is done. Reason: %s', done_reason)
