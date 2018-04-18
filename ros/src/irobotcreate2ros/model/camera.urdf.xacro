@@ -16,13 +16,13 @@
             <collision>
                 <origin xyz="0 0 0" rpy="0 0 0"/>
                 <geometry>
-                    <box size="0.02 0.08 0.05"/>
+                    <box size="0.02 0.08 0.11"/>
                 </geometry>
             </collision>
             <visual>
                 <origin xyz="0 0 0" rpy="0 0 0"/>
                 <geometry>
-                    <box size="0.02 0.08 0.05"/>
+                    <box size="0.02 0.08 0.11"/>
                 </geometry>
                 <material name="iRobot/Green"/>
             </visual>
@@ -41,8 +41,8 @@
                 <camera name="head">
                     <horizontal_fov>1.3962634</horizontal_fov>
                     <image>
-                        <width>800</width>
-                        <height>600</height>
+                        <width>640</width>
+                        <height>480</height>
                         <format>R8G8B8</format>
                     </image>
                     <clip>

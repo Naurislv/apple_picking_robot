@@ -263,11 +263,124 @@
       </geometry>
     </collision>
   </link>
-  <!-- Laser link and plugin -->
-  <!--<xacro:hokuyo_laser xyz="0 0 ${0.04 + 0.02}" 
-                  rpy="0 0 0"
-                  parent="base_link">
-    </xacro:hokuyo_laser>-->
+  <joint name="hokuyo_laser_joint" type="fixed">
+    <axis xyz="0 0 0"/>
+    <origin rpy="0 -0.1 3.11" xyz="0.08 0.09 0.1"/>
+    <parent link="base_link"/>
+    <child link="hokuyo_link"/>
+  </joint>
+  <link name="hokuyo_link">
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <cylinder length="0.12" radius="0.015"/>
+        l
+            
+      </geometry>
+    </collision>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <cylinder length="0.12" radius="0.015"/>
+      </geometry>
+      <material name="iRobot/LightBlue"/>
+    </visual>
+    <inertial>
+      <mass value="1e-5"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6"/>
+    </inertial>
+  </link>
+  <gazebo reference="hokuyo_link">
+    <gravity>true</gravity>
+    <sensor name="head_hokuyo_sensor" type="ray">
+      <pose>0 0 0 0 0 0</pose>
+      <visualize>true</visualize>
+      <update_rate>40</update_rate>
+      <ray>
+        <scan>
+          <horizontal>
+            <samples>2</samples>
+            <resolution>1</resolution>
+            <min_angle>-3.14</min_angle>
+            <max_angle>3.14</max_angle>
+          </horizontal>
+        </scan>
+        <range>
+          <min>0.2</min>
+          <max>40</max>
+          <resolution>0.025</resolution>
+        </range>
+        <noise>
+          <type>gaussian</type>
+          <mean>0.0</mean>
+          <stddev>0.0</stddev>
+        </noise>
+      </ray>
+      <plugin filename="libgazebo_ros_laser.so" name="gazebo_ros_head_hokuyo_controller">
+        <topicName>/laser_scan</topicName>
+        <frameName>hokuyo_link</frameName>
+      </plugin>
+    </sensor>
+  </gazebo>
+  <joint name="hokuyo_laser_joint_2" type="fixed">
+    <axis xyz="0 0 0"/>
+    <origin rpy="0 -0.1 3.45" xyz="0.08 -0.09 0.1"/>
+    <parent link="base_link"/>
+    <child link="hokuyo_link_2"/>
+  </joint>
+  <link name="hokuyo_link_2">
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <cylinder length="0.12" radius="0.015"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <cylinder length="0.12" radius="0.015"/>
+      </geometry>
+      <material name="iRobot/Red"/>
+    </visual>
+    <inertial>
+      <mass value="1e-5"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6"/>
+    </inertial>
+  </link>
+  <gazebo reference="hokuyo_link_2">
+    <gravity>true</gravity>
+    <sensor name="head_hokuyo_sensor" type="ray">
+      <pose>0 0 0 0 0 0</pose>
+      <visualize>true</visualize>
+      <update_rate>40</update_rate>
+      <ray>
+        <scan display="true">
+          <horizontal>
+            <samples>2</samples>
+            <resolution>1</resolution>
+            <min_angle>-3.14</min_angle>
+            <max_angle>3.14</max_angle>
+          </horizontal>
+        </scan>
+        <range>
+          <min>0.120</min>
+          <max>3.5</max>
+          <resolution>0.015</resolution>
+        </range>
+        <noise>
+          <type>gaussian</type>
+          <mean>0.0</mean>
+          <stddev>0.01</stddev>
+        </noise>
+      </ray>
+      <plugin filename="libgazebo_ros_laser.so" name="gazebo_ros_head_hokuyo_2_controller">
+        <topicName>/laser_scan_2</topicName>
+        <frameName>hokuyo_link_2</frameName>
+      </plugin>
+    </sensor>
+  </gazebo>
   <joint name="imu_sensor_joint" type="fixed">
     <axis xyz="0 0 1"/>
     <origin rpy="0 0 0" xyz="-0.1 0 0.05"/>
@@ -323,13 +436,13 @@
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <box size="0.02 0.08 0.05"/>
+        <box size="0.02 0.08 0.11"/>
       </geometry>
     </collision>
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <box size="0.02 0.08 0.05"/>
+        <box size="0.02 0.08 0.11"/>
       </geometry>
       <material name="iRobot/Green"/>
     </visual>

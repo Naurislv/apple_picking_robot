@@ -7,7 +7,8 @@
   <xacro:include filename="$(find irobotcreate2)/model/wheel.urdf.xacro"/>
   <xacro:include filename="$(find irobotcreate2)/model/shelf.urdf.xacro"/>
   <xacro:include filename="$(find irobotcreate2)/gazebo/iRobot.gazebo.xacro"/>
-  <!--<xacro:include filename="$(find irobotcreate2)/model/hokuyo.urdf.xacro"/>-->
+  <xacro:include filename="$(find irobotcreate2)/model/hokuyo.urdf.xacro"/>
+  <xacro:include filename="$(find irobotcreate2)/model/hokuyo_v2.urdf.xacro"/>
   <xacro:include filename="$(find irobotcreate2)/model/imu.urdf.xacro"/>
   <xacro:include filename="$(find irobotcreate2)/model/camera.urdf.xacro"/>
   <xacro:include filename="$(find irobotcreate2)/model/bumper.urdf.xacro"/>
@@ -132,11 +133,17 @@
     </link>
     
     
-    <!-- Laser link and plugin -->
-    <!--<xacro:hokuyo_laser xyz="0 0 ${0.04 + 0.02}" 
-                  rpy="0 0 0"
+    <!-- Laser link and plugin v1 -->
+    <xacro:hokuyo_laser xyz="0.08 0.09 ${0.04 + 0.02 + 0.04}" 
+                  rpy="0 -0.1 3.11"
                   parent="base_link">
-    </xacro:hokuyo_laser>-->
+    </xacro:hokuyo_laser>
+
+    <!-- Laser link and plugin v2 -->
+    <xacro:hokuyo_laser_2 xyz="0.08 -0.09 ${0.04 + 0.02 + 0.04}" 
+                  rpy="0 -0.1 3.45"
+                  parent="base_link">
+    </xacro:hokuyo_laser_2>
     
     <!--Imu link and plugin-->
     <xacro:imu_sensor xyz="-0.1 0 ${0.04 + 0.01}" 
