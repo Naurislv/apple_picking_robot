@@ -190,8 +190,6 @@ class GymEnv(object):
             std = np.std(discounted_r) + 0.00000001
             discounted_r = (discounted_r - mean) / (std)
 
-        print(discounted_r)
-
         return discounted_r
 
     def _save_checkpoint(self, chk_file, statistics_file):
@@ -253,10 +251,10 @@ class GymEnv(object):
             # for previous action)
             reward_his.append(reward)
 
-            if n_frames % 20 == 0:
+            if n_frames % 10 == 0:
                 end_time = time.time()
 
-                fps = 20 / (end_time - start_time)
+                fps = 10 / (end_time - start_time)
                 rospy.loginfo("%s.[%s]. T[%.2fs] FPS: %.2f, Reward Sum: %s (%.1f)",
                               episode_number, self.no_ep_load, end_time - train_time,
                               fps, reward_sum, reward)

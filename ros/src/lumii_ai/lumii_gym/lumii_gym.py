@@ -97,14 +97,14 @@ class LumiiGym(RobotControl):
         elif self.is_bumper_triggered and self.nb_steps - self.step_counter > 2:
             done_reason = 'bumper_triggered'
             done = True
-            reward -= 1
+            reward -= 2
         else:
             self.is_bumper_triggered = False
 
         if step_feedback['tried_pickup'] and step_feedback['done_pickup']:
             reward += 10
 
-        # reward += step_feedback['dist_towrds_apple']
+        reward += step_feedback['dist_towrds_apple']
         # reward = reward + 10 * step_feedback['dist_traveled']
         # reward += step_feedback['dist_traveled_from_o']
 
