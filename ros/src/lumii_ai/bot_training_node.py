@@ -183,7 +183,7 @@ class GymEnv(object):
             running_add = running_add * gamma + reward_his[i]
             discounted_r.append(running_add)
 
-        discounted_r = np.array(discounted_r, dtype=reward_his.dtype)
+        discounted_r = np.array(list(reversed(discounted_r)), dtype=reward_his.dtype)
         # Normalize
         if normal:
             mean = np.mean(discounted_r)
