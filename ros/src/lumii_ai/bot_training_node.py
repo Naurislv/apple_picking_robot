@@ -12,8 +12,10 @@ Insipred from :
 
 # Standard imports
 import time
+from datetime import datetime
 import os
 import sys
+import glob
 
 # Dependency imports
 import rospy
@@ -37,11 +39,11 @@ _FLAGS.DEFINE_boolean('video_small', False, "Whether to record and save video or
 _FLAGS.DEFINE_boolean('video_big', False, "Whether to record and save video or not. Gym built "
                                           "in command. Also create report .json files. Boolean.")
 _FLAGS.DEFINE_boolean('gpu', False, "Use GPU.")
-_FLAGS.DEFINE_string('name', 'test_0',
+_FLAGS.DEFINE_string('name', 'test',
                      'Name of run, will be used to save and load checkpoint and statistic files.')
 _FLAGS.DEFINE_integer('nb_episodes', 100000000, 'number of episodes to run')
 _FLAGS.DEFINE_integer('checkpoint_steps', 300, 'After how many episodes to save checkpoint')
-_FLAGS.DEFINE_integer('batch_size', 4, 'After how many episodes to save checkpoint')
+_FLAGS.DEFINE_integer('batch_size', 1, 'After how many episodes to save checkpoint')
 
 class GymEnv(object):
     """OpenAI Gym Virtual Environment - setup."""
@@ -54,7 +56,7 @@ class GymEnv(object):
         self.episdod_reward = []  # episode reward sum
         self.no_frames = []  # number of frames in all episode
 
-        # Create gym environment for CarRacing-v0
+        # Create gym environment
         self.env = gym.make(env_name)
         rospy.loginfo("%s initialized", env_name)
 
@@ -72,8 +74,7 @@ class GymEnv(object):
             rospy.loginfo('AS sample: %s', self.env.action_space.sample())
 
         # Observation sapce shape after preprocessing
-        # os_sample_shape = self.prepro(self.env.observation_space.sample(), None)[0].shape
-        os_sample_shape = self.prepro(self.env.observation_space.sample()).shape
+        os_sample_shape = self.prepro(self.env.observation_space.sample(), None)[0].shape
         rospy.loginfo("Observation sample shape after preprocess: %s", os_sample_shape)
 
         if FLAGS.gpu:
@@ -98,7 +99,7 @@ class GymEnv(object):
         """Start loop."""
 
         if run_name == '':
-            run_name = str(int(round(time.time() * 1000)))
+            run_name = datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
 
         if not os.path.exists('outputs/' + run_name):
             rospy.loginfo('Creating outputs/' + run_name)
@@ -109,7 +110,10 @@ class GymEnv(object):
 
         # Try to load tensorflow model
         try:
-            self.policy.load(chk_file)
+            models_paths = sorted(glob.glob(chk_file + '/*'))
+            model_path = models_paths[-1] + '/model'
+            print('AAAAAAAAAAAAAAA', model_path)
+            self.policy.load(model_path)
         except tf.errors.NotFoundError:
             rospy.logwarn("Checkpoint Not Found: %s", chk_file)
             self.policy.init_weights()
@@ -123,33 +127,24 @@ class GymEnv(object):
 
         self._run(chk_file, statistics_file)
 
-    # def prepro(self, img, prev_img):
-    def prepro(self, img):
+    def prepro(self, img, prev_img):
         """ prepro 77x102x3 uint8 frame into 6400 (80x80) 1D float vector """
         # Resize image using interpolation
-        img = cv2.resize(img, None, fx=0.16, fy=0.16, interpolation=cv2.INTER_AREA)
+        img = cv2.resize(img, None, fx=0.26, fy=0.26, interpolation=cv2.INTER_AREA)
         img = img.astype(self.data_type['np'])
+
         # Standardize image so it would be in range -0.5 .. 0.5
         img = (img - 127.5) / 255
 
         # Insert motion in frame by subtracting previous frame from current
-        # if prev_img is not None:
-            # absdiff does not give different colors if differences
-            # so neural network can't distinguish betwwen previous and current frame
-            # policy_input = cv2.absdiff(img, prev_img)
+        if prev_img is not None:
+            policy_input = img - prev_img
+        else:
+            policy_input = np.zeros_like(img)
 
-        #     policy_input = img - prev_img
-        # else:
-        #     policy_input = np.zeros_like(img)
+        prev_img = img
 
-        # prev_img = img
-
-        # print(policy_input.shape, prev_img.shape)
-        # cv2.imwrite('save_im/{}.png'.format(str(int(round(time.time() * 1000)))),
-        #             np.concatenate((prev_img, policy_input), axis=1) * 255 + 127.5)
-
-        # return policy_input, prev_img
-        return img
+        return policy_input, prev_img
 
     def discount_rewards(self, reward_his, gamma=.99, normal=True):
         """Returns discounted rewards
@@ -198,7 +193,7 @@ class GymEnv(object):
         statistics = np.array([np.array([]), np.array([])])
 
         # Save results
-        dir_path = os.path.join(chk_file, str(time.time()).replace('.', ''))
+        dir_path = os.path.join(chk_file, datetime.now().strftime("%Y_%m_%d_%H_%M_%S"))
         os.makedirs(dir_path)
         self.policy.save(dir_path + '/model')
 
@@ -233,22 +228,32 @@ class GymEnv(object):
         while episode_number <= FLAGS.nb_episodes:
 
             # preprocess the observation, set input to network to be difference image
-            # policy_input, prev_img = self.prepro(observation, prev_img)
-            policy_input = self.prepro(observation)
-
+            policy_input, prev_img = self.prepro(observation, prev_img)
             action = self.policy.sample_action(policy_input)[0][0]
-
-            # label = np.zeros((self.n_actions), dtype=self.data_type['np'])
-            # label[action] = 1
 
             # step the environment and get new measurements
             observation, reward, done, _ = self.env.step(action)
             reward_sum += reward
 
+            ##### DEBUG SAVEING #######
+            # print(policy_input.shape, prev_img.shape)
+            # im_to_save = np.concatenate((prev_img, policy_input), axis=1) * 255 + 127.5
+            # cv2.putText(
+            #     im_to_save,
+            #     'a: ' + str(action) + 'r: ' + str(reward),
+            #     (20, 20),
+            #     cv2.FONT_HERSHEY_SIMPLEX,
+            #     0.3,
+            #     (255, 255, 255),
+            #     1,
+            #     cv2.LINE_AA
+            # )
+            # cv2.imwrite('save_im/{}.png'.format(str(int(round(time.time() * 1000)))),
+            #             im_to_save)
+            ##### DEBUG SAVEING #######
+
             obs_his.append(policy_input)
             action_his.append(action)
-            # record reward (has to be done after we call step() to get reward
-            # for previous action)
             reward_his.append(reward)
 
             if n_frames % 10 == 0:

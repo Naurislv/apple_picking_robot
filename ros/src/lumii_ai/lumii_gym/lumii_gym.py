@@ -40,7 +40,7 @@ class LumiiGym(RobotControl):
         rospy.Subscriber('/irobot_bumper', ContactsState, callback=self._bumper_callback)
 
         # Count steps, so we can know when game is Done (dont play forever)
-        self.nb_steps = 300
+        self.nb_steps = 500
         self.is_bumper_triggered = False
         self.step_counter = self.nb_steps
 
@@ -97,16 +97,16 @@ class LumiiGym(RobotControl):
         elif self.is_bumper_triggered and self.nb_steps - self.step_counter > 2:
             done_reason = 'bumper_triggered'
             done = True
-            reward -= 2
         else:
             self.is_bumper_triggered = False
 
         if step_feedback['tried_pickup'] and step_feedback['done_pickup']:
-            reward += 10
+            reward += 1
 
-        reward += step_feedback['dist_towrds_apple']
+        # reward += step_feedback['dist_towrds_apple']
         # reward = reward + 10 * step_feedback['dist_traveled']
         # reward += step_feedback['dist_traveled_from_o']
+        # reward -= 1
 
         if done:
             rospy.logwarn('Environment is done. Reason: %s', done_reason)
