@@ -112,7 +112,6 @@ class GymEnv(object):
         try:
             models_paths = sorted(glob.glob(chk_file + '/*'))
             model_path = models_paths[-1] + '/model'
-            print('AAAAAAAAAAAAAAA', model_path)
             self.policy.load(model_path)
         except tf.errors.NotFoundError:
             rospy.logwarn("Checkpoint Not Found: %s", chk_file)
