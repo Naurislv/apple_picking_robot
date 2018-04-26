@@ -110,6 +110,7 @@ class GymEnv(object):
 
         # Try to load tensorflow model
         try:
+            model_path = ''
             models_paths = sorted(glob.glob(chk_file + '/*'))
             if models_paths:
                 model_path = models_paths[-1] + '/model'
