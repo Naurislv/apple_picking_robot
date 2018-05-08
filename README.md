@@ -1,6 +1,6 @@
 # Apple picking robot
 
-Creating autonomous robot for given size apples pitching in the controlled indoor environment to gain and share the experience.
+CCreating autonomous robot for given size apples pitching in the controlled indoor environment to gain and share the experience.
 
 ## Project structure
 
