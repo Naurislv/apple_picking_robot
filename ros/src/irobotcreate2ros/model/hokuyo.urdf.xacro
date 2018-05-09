@@ -3,23 +3,23 @@
 
 <xacro:macro name="hokuyo_laser" params="xyz rpy parent">
     <joint name="hokuyo_laser_joint" type="fixed">
-        <axis xyz="0 0 1" />
+        <axis xyz="0 0 0" />
         <origin xyz="${xyz}" rpy="${rpy}"/>
         <parent link="${parent}"/>
-        <child link="hokuyo_laser_link"/>
+        <child link="hokuyo_link"/>
     </joint>
      
-    <link name="hokuyo_laser_link">
+    <link name="hokuyo_link">
         <collision>
             <origin xyz="0 0 0" rpy="0 0 0"/>
             <geometry>
-                <cylinder length="0.04" radius="0.045"/>
+                <cylinder length="0.12" radius="0.015"/>l
             </geometry>
         </collision>
         <visual>
             <origin xyz="0 0 0" rpy="0 0 0"/>
             <geometry>
-                <cylinder length="0.04" radius="0.045"/>
+                <cylinder length="0.12" radius="0.015"/>
             </geometry>
             <material name="iRobot/LightBlue"/>
         </visual>
@@ -30,7 +30,7 @@
         </inertial>
     </link>
     
-    <gazebo reference="hokuyo_laser_link">
+    <gazebo reference="hokuyo_link">
         <gravity>true</gravity>
         <sensor type="ray" name="head_hokuyo_sensor">
             <pose>0 0 0 0 0 0</pose>
@@ -39,10 +39,10 @@
             <ray>
                 <scan>
                     <horizontal>
-                        <samples>360</samples>
+                        <samples>2</samples>
                         <resolution>1</resolution>
-                        <min_angle>-3.14159</min_angle>
-                        <max_angle>3.14159</max_angle>
+                        <min_angle>-3.14</min_angle>
+                        <max_angle>3.14</max_angle>
                     </horizontal>
                 </scan>
                 <range>
@@ -57,9 +57,8 @@
                 </noise>
             </ray>
             <plugin name="gazebo_ros_head_hokuyo_controller" filename="libgazebo_ros_laser.so">
-                <robotNamespace></robotNamespace>
-                <topicName>laser_scan</topicName>
-                <frameName>hokuyo_laser_link</frameName>
+                <topicName>/laser_scan</topicName>
+                <frameName>hokuyo_link</frameName>
             </plugin>      
         </sensor>
     </gazebo>
