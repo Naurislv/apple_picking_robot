@@ -218,36 +218,35 @@ class RobotControl(object):
         return is_apple_picked
 
     def random_apples(self):
-	"""Put apples in random places."""
+        """Put apples in random places."""
 
-	new_model_state = rospy.ServiceProxy('/gazebo/set_model_state', SetModelState)
-	i=0
-         
-	model_state = ModelState()
+        new_model_state = rospy.ServiceProxy('/gazebo/set_model_state', SetModelState)
+        i = 0
 
-	for i in range (0,9):
-		apple_name = 'cricket_ball_' + str(i)
-		rospy.loginfo('Random %s', apple_name)
-		model_state.model_name = apple_name
+        model_state = ModelState()
 
-		twist = Twist()
-		twist = self._set_twist(twist)
-		model_state.twist = twist
+        for i in range(0, 9):
+            apple_name = 'cricket_ball_' + str(i)
+            rospy.loginfo('Random %s', apple_name)
+            model_state.model_name = apple_name
 
-		pose = Pose()
-		pose.position.x = random.uniform(-1.8,1.8)
-		pose.position.y = random.uniform(-1.8,1.8)
-		pose.position.z = 0.0
-		pose.orientation.x = 0.0
-		pose.orientation.y = 0.0
-		pose.orientation.z = 0.0
-		pose.orientation.w = 0.0
+            twist = Twist()
+            twist = self._set_twist(twist)
+            model_state.twist = twist
 
-		model_state.pose = pose
-		model_state.reference_frame = 'world'
+            pose = Pose()
+            pose.position.x = random.uniform(-1.8, 1.8)
+            pose.position.y = random.uniform(-1.8, 1.8)
+            pose.position.z = 0.0
+            pose.orientation.x = 0.0
+            pose.orientation.y = 0.0
+            pose.orientation.z = 0.0
+            pose.orientation.w = 0.0
 
-		new_model_state(model_state)
+            model_state.pose = pose
+            model_state.reference_frame = 'world'
 
+            new_model_state(model_state)
 
     def env_reset(self):
         """Restart world."""
@@ -262,7 +261,7 @@ class RobotControl(object):
         reset_world = rospy.ServiceProxy('/gazebo/reset_world', Empty)
         reset_world()
 
-	self.random_apples()
+        self.random_apples()
 
         rospy.loginfo('World reset')
 
