@@ -12,7 +12,7 @@ ros/.catkin_workspace
 .DS_Store
 
 # Visual studio code settings for workspace
-.vscode/*
+.vscode
 
 # Ignore rosinstall
 .rosinstall
