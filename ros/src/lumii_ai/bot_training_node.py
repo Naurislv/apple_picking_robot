@@ -286,7 +286,7 @@ class GymEnv(object):
                     for act in action_his:
                         action_space[act] += 1
 
-                    rospy.loginfo("Update weights from %d frames with average score: %s"),
+                    rospy.loginfo("Update weights from %d frames with average score: %s",
                                   len(reward_his),
                                   reward_his[reward_his != None].sum() / FLAGS.batch_size)
                     rospy.loginfo("Used action space: %s", action_space)
