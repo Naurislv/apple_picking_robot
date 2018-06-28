@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<launch>
+    <node pkg="nn_agent" type="nn_agent.py" name="nn_agent" output="screen" cwd="node"/>
+</launch>

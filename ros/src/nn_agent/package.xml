@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<package>
+  <name>nn_agent</name>
+  <version>0.1.0</version>
+  <description>Applepicker neural network agent that attempts to drive the robot based on camera input</description>
+
+  <maintainer email="peteris@ailab.lv">Peteris Paikens</maintainer>
+  <license>GPLv3</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <run_depend>geometry_msgs</run_depend>
+  <run_depend>rospy</run_depend>
+
+
+</package>
