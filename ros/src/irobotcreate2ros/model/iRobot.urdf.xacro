@@ -11,6 +11,7 @@
   <xacro:include filename="$(find irobotcreate2)/model/hokuyo_v2.urdf.xacro"/>
   <xacro:include filename="$(find irobotcreate2)/model/imu.urdf.xacro"/>
   <xacro:include filename="$(find irobotcreate2)/model/camera.urdf.xacro"/>
+  <xacro:include filename="$(find irobotcreate2)/model/camera_up.urdf.xacro"/>
   <xacro:include filename="$(find irobotcreate2)/model/bumper.urdf.xacro"/>
 
   <xacro:property name="pi" value="3.1415926535897931"/>
@@ -46,6 +47,33 @@
             <origin xyz="0 0 0" rpy="0 0 0"/>
             <geometry>
                 <cylinder length="0.08" radius="0.17"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <joint name="box" type="fixed">
+        <origin xyz="-0.10 0 0.25" rpy="0 0 0" />
+        <parent link="base_link"/>
+        <child link="box"/>
+    </joint>
+
+    <link name="box">
+        <inertial>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <mass value="1"/>
+             <inertia ixx="${1/12*10*3*0.17*0.17+1/12*5*3*0.08*0.08}" ixy="0.0" ixz="0.0" iyy="${1/12*10*3*0.17*0.17+1/12*5*3*0.08*0.08}" iyz="0.0" izz="${1/2*10*0.17*0.17}"/> 
+        </inertial>
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <box size="0.01 0.01 0.5"/>
+            </geometry>
+            <material name="iRobot/Black"/>
+        </visual>
+        <collision name="box">
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <box size="0.01 0.01 0.5"/>
             </geometry>
         </collision>
     </link>
@@ -152,10 +180,16 @@
     </xacro:imu_sensor>
     
     <!--Camera link and plugin-->
-    <xacro:camera_sensor xyz="0 0 ${0.04 + 0.02 + 0.04}" 
+    <xacro:camera_sensor xyz="0.08 0 ${0.04 + 0.02 + 0.04}" 
                   rpy="0 0 0"
                   parent="base_link">
     </xacro:camera_sensor>
+
+    <!--Camera up link and plugin-->
+    <xacro:camera_up_sensor xyz="-0.08 0 0.5" 
+                  rpy="0 1.4 0"
+                  parent="base_link">
+    </xacro:camera_up_sensor>
     
     <!--Bumper link and plugin-->
     <xacro:bumper_sensor xyz="0 0 0" 

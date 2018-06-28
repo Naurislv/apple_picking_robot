@@ -3,15 +3,15 @@
     <link name='base_link'>
       <pose frame=''>0 0 0 0 -0 0</pose>
       <inertial>
-        <pose frame=''>-1e-05 0 2e-06 0 -0 0</pose>
-        <mass>10.0031</mass>
+        <pose frame=''>-0.009097 0 0.022727 0 -0 0</pose>
+        <mass>11.0032</mass>
         <inertia>
-          <ixx>0.0802962</ixx>
+          <ixx>0.217388</ixx>
           <ixy>1.05879e-22</ixy>
-          <ixz>4.83978e-06</ixz>
-          <iyy>0.0802669</iyy>
+          <ixz>0.0227331</ixz>
+          <iyy>0.226449</iyy>
           <iyz>-3.36272e-19</iyz>
-          <izz>0.144552</izz>
+          <izz>0.298143</izz>
         </inertia>
       </inertial>
       <collision name='base_link_collision'>
@@ -49,8 +49,16 @@
           </cylinder>
         </geometry>
       </collision>
-      <collision name='base_link_fixed_joint_lump__camera_link_collision_3'>
-        <pose frame=''>0 0 0.1 0 -0 0</pose>
+      <collision name='base_link_fixed_joint_lump__box_collision_3'>
+        <pose frame=''>-0.1 0 0.25 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.01 0.01 0.5</size>
+          </box>
+        </geometry>
+      </collision>
+      <collision name='base_link_fixed_joint_lump__camera_link_collision_4'>
+        <pose frame=''>0.08 0 0.1 0 -0 0</pose>
         <geometry>
           <box>
             <size>0.02 0.08 0.11</size>
@@ -65,7 +73,23 @@
           </friction>
         </surface>
       </collision>
-      <collision name='base_link_fixed_joint_lump__hokuyo_link_collision_4'>
+      <collision name='base_link_fixed_joint_lump__camera_up_link_collision_5'>
+        <pose frame=''>-0.08 0 0.5 0 1.4 0</pose>
+        <geometry>
+          <box>
+            <size>0.02 0.05 0.05</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode/>
+          </friction>
+        </surface>
+      </collision>
+      <collision name='base_link_fixed_joint_lump__hokuyo_link_collision_6'>
         <pose frame=''>0.08 0.09 0.1 0 -0.1 3.11</pose>
         <geometry>
           <cylinder>
@@ -82,7 +106,7 @@
           </friction>
         </surface>
       </collision>
-      <collision name='base_link_fixed_joint_lump__hokuyo_link_2_collision_5'>
+      <collision name='base_link_fixed_joint_lump__hokuyo_link_2_collision_7'>
         <pose frame=''>0.08 -0.09 0.1 0 -0.1 -2.83319</pose>
         <geometry>
           <cylinder>
@@ -99,7 +123,7 @@
           </friction>
         </surface>
       </collision>
-      <collision name='base_link_fixed_joint_lump__imu_sensor_link_collision_6'>
+      <collision name='base_link_fixed_joint_lump__imu_sensor_link_collision_8'>
         <pose frame=''>-0.1 0 0.05 0 -0 0</pose>
         <geometry>
           <box>
@@ -148,8 +172,16 @@
           </cylinder>
         </geometry>
       </visual>
-      <visual name='base_link_fixed_joint_lump__camera_link_visual_3'>
-        <pose frame=''>0 0 0.1 0 -0 0</pose>
+      <visual name='base_link_fixed_joint_lump__box_visual_3'>
+        <pose frame=''>-0.1 0 0.25 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.01 0.01 0.5</size>
+          </box>
+        </geometry>
+      </visual>
+      <visual name='base_link_fixed_joint_lump__camera_link_visual_4'>
+        <pose frame=''>0.08 0 0.1 0 -0 0</pose>
         <geometry>
           <box>
             <size>0.02 0.08 0.11</size>
@@ -162,7 +194,21 @@
           </script>
         </material>
       </visual>
-      <visual name='base_link_fixed_joint_lump__hokuyo_link_visual_4'>
+      <visual name='base_link_fixed_joint_lump__camera_up_link_visual_5'>
+        <pose frame=''>-0.08 0 0.5 0 1.4 0</pose>
+        <geometry>
+          <box>
+            <size>0.02 0.05 0.05</size>
+          </box>
+        </geometry>
+        <material>
+          <script>
+            <uri>__default__</uri>
+            <name>__default__</name>
+          </script>
+        </material>
+      </visual>
+      <visual name='base_link_fixed_joint_lump__hokuyo_link_visual_6'>
         <pose frame=''>0.08 0.09 0.1 0 -0.1 3.11</pose>
         <geometry>
           <cylinder>
@@ -177,7 +223,7 @@
           </script>
         </material>
       </visual>
-      <visual name='base_link_fixed_joint_lump__hokuyo_link_2_visual_5'>
+      <visual name='base_link_fixed_joint_lump__hokuyo_link_2_visual_7'>
         <pose frame=''>0.08 -0.09 0.1 0 -0.1 -2.83319</pose>
         <geometry>
           <cylinder>
@@ -192,7 +238,7 @@
           </script>
         </material>
       </visual>
-      <visual name='base_link_fixed_joint_lump__imu_sensor_link_visual_6'>
+      <visual name='base_link_fixed_joint_lump__imu_sensor_link_visual_8'>
         <pose frame=''>-0.1 0 0.05 0 -0 0</pose>
         <geometry>
           <box>
@@ -229,8 +275,8 @@
         <camera name='head'>
           <horizontal_fov>1.39626</horizontal_fov>
           <image>
-            <width>800</width>
-            <height>600</height>
+            <width>640</width>
+            <height>480</height>
             <format>R8G8B8</format>
           </image>
           <clip>
@@ -257,7 +303,43 @@
           <distortionT1>0.0</distortionT1>
           <distortionT2>0.0</distortionT2>
         </plugin>
-        <pose frame=''>0 0 0.1 0 -0 0</pose>
+        <pose frame=''>0.08 0 0.1 0 -0 0</pose>
+      </sensor>
+      <velocity_decay/>
+      <sensor name='camera' type='camera'>
+        <update_rate>30</update_rate>
+        <camera name='head'>
+          <horizontal_fov>1.39626</horizontal_fov>
+          <image>
+            <width>640</width>
+            <height>480</height>
+            <format>R8G8B8</format>
+          </image>
+          <clip>
+            <near>0.02</near>
+            <far>300</far>
+          </clip>
+          <noise>
+            <type>gaussian</type>
+            <mean>0</mean>
+            <stddev>0.007</stddev>
+          </noise>
+        </camera>
+        <plugin name='camera_up_controller' filename='libgazebo_ros_camera.so'>
+          <alwaysOn>true</alwaysOn>
+          <updateRate>0.0</updateRate>
+          <cameraName>iRobot/camera_up</cameraName>
+          <imageTopicName>image_raw</imageTopicName>
+          <cameraInfoTopicName>camera_info</cameraInfoTopicName>
+          <frameName>camera_up_link</frameName>
+          <hackBaseline>0.07</hackBaseline>
+          <distortionK1>0.0</distortionK1>
+          <distortionK2>0.0</distortionK2>
+          <distortionK3>0.0</distortionK3>
+          <distortionT1>0.0</distortionT1>
+          <distortionT2>0.0</distortionT2>
+        </plugin>
+        <pose frame=''>-0.08 0 0.5 0 1.4 0</pose>
       </sensor>
       <velocity_decay/>
       <gravity>1</gravity>
