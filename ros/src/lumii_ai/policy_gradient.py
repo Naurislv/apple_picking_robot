@@ -15,8 +15,8 @@ import numpy as np
 # from MaxoutNet import maxout_cnn as policy_net
 # from nets import maxout_net as policy_net
 # from nets import drive_net as policy_net
-# from nets import karpathy_net as policy_net
-from nets import small_conv_net as policy_net
+from nets import karpathy_net as policy_net
+# from nets import small_conv_net as policy_net
 
 TF_CONFIG = tf.ConfigProto()
 TF_CONFIG.allow_soft_placement = True
@@ -35,7 +35,7 @@ class Policy(object):
             scope: variable scope, with this scope you will be able to access those variables
 
         """
-        self.rmsprop_decay = 0.99
+
         self.learning_rate = 1e-3
         self.state_shape = state_shape
 
@@ -72,6 +72,7 @@ class Policy(object):
             # all values equal and below will be zero and never will be sampled which
             # is not true for softmax
             self.sample = tf.multinomial(self.net['logits'], 1)
+            # self.sample = [tf.argmax(self.net['logits'], axis=1)]
 
             # Define Losses
             pg_loss = tf.reduce_mean(
@@ -89,7 +90,7 @@ class Policy(object):
             self.loss = pg_loss + value_loss - entropy_loss
 
             # surrogate loss
-            # self.loss = - tf.reduce_sum(self.disc_reward *  # pylint: disable=E1130
+            # self.loss = - tf.reduce_sum(self.disc_reward *
             #                             self.actions *
             #                             tf.log(self.net['logits_softmax'] + 0.00001))
 
