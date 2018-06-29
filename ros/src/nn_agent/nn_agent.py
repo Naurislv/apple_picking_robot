@@ -266,9 +266,12 @@ class NNAgent(object):
         #pose.position.x = -1.1 + (np.random.random_sample()/2)
         #pose.position.y = -1 + (np.random.random_sample()/2)
 
-        #in +/- 2.5 zone 
-        pose.position.x = -2.5 + (np.random.random_sample()*5)
-        pose.position.y = -2.5 + (np.random.random_sample()*5)
+        #in +/- 2.5 zone , was wrong - need 1.8
+        #pose.position.x = -2.5 + (np.random.random_sample()*5)
+        #pose.position.y = -2.5 + (np.random.random_sample()*5)
+        
+        pose.position.x = -1.8 + (np.random.random_sample()*3.6)
+        pose.position.y = -1.8 + (np.random.random_sample()*3.6)
 
 
         #just in front for apple collision exception
@@ -281,7 +284,7 @@ class NNAgent(object):
         #pose.position.y=np.random.random_sample()*2; #scale of grid -3 to +3 
         #print('APPLE put in random location x,y = ( %.2f , %.2f )' % (pose.position.x, pose.position.y))
        
-        pose.position.z = 0.0
+        pose.position.z = 2.0 #put above not inside cylinders
         pose.orientation.x = 0.0 
         pose.orientation.y = 0.0 
         pose.orientation.z = 0.0 
@@ -508,7 +511,7 @@ class NNAgent(object):
                   pose.position.y = -1.8 + (np.random.random_sample()*3.6)
 
                   
-                  pose.position.z = 1.0
+                  pose.position.z = 2.0
                   pose.orientation.x = 0.0 
                   pose.orientation.y = 0.0 
                   pose.orientation.z = 0.0 
