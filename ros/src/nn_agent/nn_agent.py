@@ -504,8 +504,8 @@ class NNAgent(object):
                   #print('  >>>>  DROP OUT FROM ZONE in random location x,y = ( %.2f , %.2f )' % (pose.position.x, pose.position.y))
                   
                   #in random location, hope not on top of romba
-                  pose.position.x = -2.5 + (np.random.random_sample()*5)
-                  pose.position.y = -2.5 + (np.random.random_sample()*5)
+                  pose.position.x = -1.8 + (np.random.random_sample()*3.6)
+                  pose.position.y = -1.8 + (np.random.random_sample()*3.6)
 
                   
                   pose.position.z = 1.0
