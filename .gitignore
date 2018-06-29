@@ -19,3 +19,7 @@ ros/.catkin_workspace
 
 # Ignore some temporary test scripts
 _test*.py
+
+# Ignore saved checkpoints (prevent overwriting CUDA and CPU incompatible networks)
+apple_checkpoint
+

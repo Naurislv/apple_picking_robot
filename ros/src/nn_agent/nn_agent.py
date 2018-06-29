@@ -4,6 +4,7 @@
 #version 2.2  - increase spot area from 5deg to 10deg, sight from 20 to 30deg
 #version 3.0  - speed control (in constant time) in neural network 
 #version 3.1  - backward movement, fix in turning speed. Increased step size from 4 frames to 10 frames (@30fps) - was not enought time to accelerate for higher speed.
+#version 3.2  - game not ends after first pickup, but gives additional 100 steps. AppleDROP zone increased. 
 import roslib; roslib.load_manifest('nn_agent')
 import rospy
 import torch
@@ -229,6 +230,7 @@ class NNAgent(object):
         self.prev2action=' ' #previous 2 move
         self.target = 0
         self.done=False #flag for indication
+        episode_length=100; #back to default size
 
 
         #put needed apple0 in spot in 90 deg CCW 
@@ -261,8 +263,12 @@ class NNAgent(object):
         #pose.position.y = -1 + (np.random.random_sample())
 
         #one block straight forward
-        pose.position.x = -1.1 + (np.random.random_sample()/2)
-        pose.position.y = -1 + (np.random.random_sample()/2)
+        #pose.position.x = -1.1 + (np.random.random_sample()/2)
+        #pose.position.y = -1 + (np.random.random_sample()/2)
+
+        #in +/- 2.5 zone 
+        pose.position.x = -2.5 + (np.random.random_sample()*5)
+        pose.position.y = -2.5 + (np.random.random_sample()*5)
 
 
         #just in front for apple collision exception
@@ -461,10 +467,16 @@ class NNAgent(object):
                   model_state = ModelState()
                   apple_name = 'cricket_ball_0'#+str(numberMin)
                   print('  +==========================================+ ' )
+                  print('   EPIZODE LENGTH PRE: '+str(episode_length) )
+                  print('  +==========================================+ ' )
                   print('  |               PICKED  APPLE              | ' )
-                  print('  |                   + 1000                 | ' )
+                  print('  |        + 1000 points and +100steps       | ' )
                   print('  +==========================================+ ' )                  
-                  self.done=True
+                  
+                  
+                  #self.done=True  #NOT stop search
+                  episode_length=episode_length+100#//give additional steps
+                  print('   EPIZODE LENGTH AFTER: '+str(episode_length) )                  
                   
                   #try:
                   #  input("Press enter to continue")
@@ -486,9 +498,16 @@ class NNAgent(object):
                   #random location (not default x=0.2 y=-2.4)
                   #pose.position.x = 0.2
                   #pose.position.y = -2.4 
-                  pose.position.x=np.random.random_sample()*2; #scale of grid -3 to +3 
-                  pose.position.y=np.random.random_sample()*2; #scale of grid -3 to +3
-                  print('  >>>>  APPLE MOVED in random location x,y = ( %.2f , %.2f )' % (pose.position.x, pose.position.y))
+                  #DROPOT FROM BOX
+                  #pose.position.x=0.0+ (np.random.random_sample()/2); #scale of grid -3 to +3 
+                  #pose.position.y=4.5+(np.random.random_sample()/2); #scale of grid -3 to +3
+                  #print('  >>>>  DROP OUT FROM ZONE in random location x,y = ( %.2f , %.2f )' % (pose.position.x, pose.position.y))
+                  
+                  #in random location, hope not on top of romba
+                  pose.position.x = -2.5 + (np.random.random_sample()*5)
+                  pose.position.y = -2.5 + (np.random.random_sample()*5)
+
+                  
                   pose.position.z = 1.0
                   pose.orientation.x = 0.0 
                   pose.orientation.y = 0.0 
